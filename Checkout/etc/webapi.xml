@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+* @author Indglobal
+*/
+-->
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
+    <route url="/V1/beckn/init" method="POST">
+        <service class="Beckn\Checkout\Api\CheckoutAddressRepositoryInterface" method="manageAddress"/>
+        <resources>
+            <resource ref="anonymous" />
+        </resources>
+    </route>
+    <route url="/V1/beckn/confirm" method="POST">
+        <service class="Beckn\Checkout\Api\CheckoutRepositoryInterface" method="manageCheckout"/>
+        <resources>
+            <resource ref="anonymous" />
+        </resources>
+    </route>
+    <route url="/V1/beckn/status" method="POST">
+        <service class="Beckn\Checkout\Api\OrderRepositoryInterface" method="manageOrder"/>
+        <resources>
+            <resource ref="anonymous" />
+        </resources>
+    </route>
+    <route url="/V1/beckn/support" method="POST">
+        <service class="Beckn\Checkout\Api\OrderRepositoryInterface" method="manageSupport"/>
+        <resources>
+            <resource ref="anonymous" />
+        </resources>
+    </route>
+    <route url="/V1/beckn/get_cancellation_reasons" method="POST">
+        <service class="Beckn\Checkout\Api\CancelRepositoryInterface" method="cancelReason"/>
+        <resources>
+            <resource ref="anonymous" />
+        </resources>
+    </route>
+    <route url="/V1/beckn/cancel" method="POST">
+        <service class="Beckn\Checkout\Api\CancelRepositoryInterface" method="cancelOrder"/>
+        <resources>
+            <resource ref="anonymous" />
+        </resources>
+    </route>
+</routes>

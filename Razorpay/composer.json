@@ -1,0 +1,38 @@
+{
+    "name": "beckn/razorpay",
+    "description": "Beckn Razorpay Patch By Indglobal",
+    "require": {
+        "php": "~5.5.0|~5.6.0",
+        "magento/magento-composer-installer": "*"
+    },
+    "type": "magento2-module",
+    "version": "1.0.0",
+    "license": [
+        "OSL-3.0",
+        "AFL-3.0"
+    ],
+    "author": [
+        {
+            "name": "Indglobal",
+            "email": "info@indglobal.in",
+            "homepage": "https://www.indglobaldigital.com",
+            "role": "Developer"
+        }
+    ],
+    "extra": {
+        "map": [
+            [
+                "*",
+                "Beckn/Razorpay"
+            ]
+        ]
+    },
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Beckn\\Razorpay\\": ""
+        }
+    }
+}

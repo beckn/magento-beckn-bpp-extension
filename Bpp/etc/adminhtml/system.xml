@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+* @author Indglobal
+*/
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="becknbpp" translate="label" sortOrder="10">
+            <label>Beckn</label>
+        </tab>
+        <section id="bpp_config" translate="label" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+            <class>separator-top</class>
+            <label>BPP Configuration</label>
+            <tab>becknbpp</tab>
+            <resource>Beckn_Bpp::backen_bpp_config</resource>
+            <group id="subscriber" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Subscriber Configuration</label>
+                <field id="subscriber_id" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Subscriber ID</label>
+                </field>
+                <field id="industry_domain" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Industry Domain</label>
+                </field>
+                <field id="country" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Country</label>
+                    <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                </field>
+                <field id="city" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>City</label>
+                </field>
+                <field id="uri" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>URI</label>
+                </field>
+                <field id="signing_public_key" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Signing Public Key</label>
+                    <frontend_model>Beckn\Bpp\Block\Adminhtml\System\Config\Form\Field\Disable</frontend_model>
+                </field>
+                <field id="signing_private_key" translate="label" type="password" sortOrder="70" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Signing Private Key</label>
+                    <frontend_model>Beckn\Bpp\Block\Adminhtml\System\Config\Form\Field\Disable</frontend_model>
+                </field>
+                <field id="signing_key_pair" translate="label comment tooltip" type="button" sortOrder="80" showInDefault="1"
+                       showInWebsite="0" showInStore="0">
+                    <comment>Generate Signing Key</comment>
+                    <frontend_model>Beckn\Bpp\Block\Adminhtml\System\Config\ButtonGenerateSignkey</frontend_model>
+                </field>
+                <field id="encryption_public_key" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Encryption Public Key</label>
+                    <frontend_model>Beckn\Bpp\Block\Adminhtml\System\Config\Form\Field\Disable</frontend_model>
+                </field>
+                <field id="encryption_private_key" translate="label" type="password" sortOrder="100" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Encryption Private Key</label>
+                    <frontend_model>Beckn\Bpp\Block\Adminhtml\System\Config\Form\Field\Disable</frontend_model>
+                </field>
+                <field id="encryption_key_pair" translate="label comment tooltip" type="button" sortOrder="110" showInDefault="1"
+                       showInWebsite="0" showInStore="0">
+                    <comment>Generate Encryption Key</comment>
+                    <frontend_model>Beckn\Bpp\Block\Adminhtml\System\Config\ButtonGenerateEnckey</frontend_model>
+                </field>
+                <field id="url" translate="label" type="text" sortOrder="120" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>URL</label>
+                </field>
+                <field id="valid_from" translate="label" sortOrder="130" type="date" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Valid From</label>
+                    <frontend_model>Beckn\Bpp\Block\Adminhtml\System\Config\Date</frontend_model>
+                </field>
+                <field id="valid_until" translate="label" sortOrder="140" type="date" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Valid Until</label>
+                    <frontend_model>Beckn\Bpp\Block\Adminhtml\System\Config\Date</frontend_model>
+                </field>
+                <field id="status" translate="label" sortOrder="150" type="text" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Status</label>
+                    <frontend_model>Beckn\Bpp\Block\Adminhtml\System\Config\Form\Field\Disable</frontend_model>
+                </field>
+                <field id="subscribe" translate="label comment tooltip" type="button" sortOrder="160" showInDefault="1"
+                       showInWebsite="0" showInStore="0">
+                    <comment>To Subscribe, Fulfill the URL Valid From and Valid until inputs and "Save Config". Then push the button "Subscribe".</comment>
+                    <frontend_model>Beckn\Bpp\Block\Adminhtml\System\Config\ButtonSubscribe</frontend_model>
+                </field>
+            </group>
+            <group id="business" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Business Configuration</label>
+                <field id="name" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Name</label>
+                </field>
+                <field id="short_desc" translate="label" type="textarea" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Short Description</label>
+                </field>
+                <field id="logo" translate="label" type="image" sortOrder="30" showInDefault="1" showInWebsite="1" >
+                    <label>Logo</label>
+                    <backend_model>Magento\Config\Model\Config\Backend\File</backend_model>
+                    <base_url type="media" scope_info="1">beckn/business/logo</base_url>
+                    <upload_dir config="system" scope_info="1">beckn/business/logo</upload_dir>
+                </field>
+            </group>
+            <group id="api" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>API Configuration</label>
+                <field id="option" translate="label" type="multiselect" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Activate APIs</label>
+                    <source_model>Beckn\Bpp\Model\Config\Source\ApiList</source_model>
+                </field>
+<!--                <field id="shipping_option" translate="label" type="multiselect" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">-->
+<!--                    <label>Shipping Option</label>-->
+<!--                    <source_model>Beckn\Bpp\Model\Config\Source\ShippingOption</source_model>-->
+<!--                </field>-->
+            </group>
+            <group id="fulfilment" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Shipping Configuration</label>
+                <field id="type" translate="label" type="multiselect" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Fulfilment type</label>
+                    <source_model>Beckn\Bpp\Model\Config\Source\FulfilmentType</source_model>
+                </field>
+            </group>
+        </section>
+        <section id="provider_config" translate="label" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+            <class>separator-top</class>
+            <label>Provider Configuration</label>
+            <tab>becknbpp</tab>
+            <resource>Beckn_Bpp::backen_bpp_config</resource>
+            <group id="provider_details" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Provider Details</label>
+                <field id="name" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Name</label>
+                </field>
+                <field id="short_desc" translate="label" type="textarea" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Short Description</label>
+                </field>
+                <field id="logo" translate="label" type="image" sortOrder="30" showInDefault="1" showInWebsite="1" >
+                    <label>Logo</label>
+                    <backend_model>Magento\Config\Model\Config\Backend\File</backend_model>
+                    <base_url type="media" scope_info="1">beckn/provider/logo</base_url>
+                    <upload_dir config="system" scope_info="1">beckn/provider/logo</upload_dir>
+                </field>
+            </group>
+            <group id="number_of_provider" translate="label" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Select Number of Providers</label>
+                <field id="number" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Number</label>
+                </field>
+            </group>
+            <group id="provider_address" translate="label" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Provider Address</label>
+                <field id="provider_name" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Provider Name</label>
+                </field>
+                <field id="provider_id" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Provider Id</label>
+                </field>
+                <field id="email" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Email</label>
+                </field>
+                <field id="phone" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Phone</label>
+                </field>
+                <field id="gps_location" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>GPS Location</label>
+                    <comment><![CDATA[<b>Please enter with (,) separated</b>]]></comment>
+                </field>
+                <field id="door" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Door</label>
+                </field>
+                <field id="name" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Name</label>
+                </field>
+                <field id="building" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Building</label>
+                </field>
+                <field id="street" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Street</label>
+                </field>
+                <field id="locality" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Locality</label>
+                </field>
+                <field id="ward" translate="label" type="text" sortOrder="110" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Ward</label>
+                </field>
+                <field id="city" translate="label" type="text" sortOrder="120" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>City</label>
+                </field>
+                <field id="city_code" translate="label" type="text" sortOrder="130" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>City Code</label>
+                </field>
+                <field id="state" translate="label" type="text" sortOrder="140" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>State</label>
+                </field>
+                <field id="country" translate="label" type="select" sortOrder="150" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Country</label>
+                    <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                </field>
+                <field id="area_code" translate="label" type="text" sortOrder="160" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Area Code</label>
+                </field>
+                <field id="station_code" translate="label" type="text" sortOrder="170" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Station Code</label>
+                </field>
+                <field id="radius" translate="label" type="text" sortOrder="180" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Area Radius in (KM)</label>
+                </field>
+            </group>
+            <group id="support_info" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Support Information</label>
+                <field id="phone" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Phone Number</label>
+                </field>
+                <field id="email" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Email Address</label>
+                </field>
+                <field id="url" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>URL</label>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

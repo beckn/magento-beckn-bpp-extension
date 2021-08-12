@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+* @author Indglobal
+*/
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="bpp_config">
+            <group id="payment" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Payment Configuration</label>
+                <field id="types" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Payment Types</label>
+                    <source_model>Beckn\Checkout\Model\Config\Source\PaymentTypes</source_model>
+                </field>
+                <field id="method" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Select Payment Method</label>
+                    <source_model>Beckn\Checkout\Model\Config\Source\PaymentMethod</source_model>
+                </field>
+            </group>
+            <group id="order_cancel" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Cancel Reason</label>
+                <field id="reason" translate="label" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Add Reason</label>
+                    <frontend_model>Beckn\Checkout\Block\Adminhtml\CancelReason\Options</frontend_model>
+                    <backend_model>Beckn\Checkout\Model\Config\CancelReason\Options</backend_model>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

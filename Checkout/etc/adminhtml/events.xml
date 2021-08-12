@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<!--
+/**
+* @author Indglobal
+*/
+-->
+<config>
+    <event name="sales_order_invoice_pay">
+        <observer name="beckn_order_invoice" instance="Beckn\Checkout\Observer\SalesOrderInvoicePay" />
+    </event>
+</config>

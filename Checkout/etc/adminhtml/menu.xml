@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!--
+/**
+* @author Indglobal
+*/
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="Beckn_Checkout::beckn_orders_manage" title="Beckn Orders" translate="title" module="Beckn_Checkout" sortOrder="100" parent="Magento_Sales::sales_operation" action="becknorders/index" resource="Beckn_Checkout::beckn_orders_manage"/>
+        <add id="Beckn_Checkout::razorpay_payment" title="Razorpay Payment" translate="title" module="Beckn_Checkout" sortOrder="101" parent="Magento_Sales::sales_operation" action="becknorders/razorpay" resource="Beckn_Checkout::razorpay_payment"/>
+    </menu>
+</config>

@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!--
+/**
+* @author Indglobal
+*/
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Beckn\Checkout\Api\CheckoutRepositoryInterface" type="Beckn\Checkout\Model\Repository\Checkout\CheckoutRepository" />
+    <preference for="Beckn\Checkout\Api\CheckoutAddressRepositoryInterface" type="Beckn\Checkout\Model\Repository\Checkout\CheckoutAddressRepository" />
+    <preference for="Beckn\Checkout\Api\OrderRepositoryInterface" type="Beckn\Checkout\Model\Repository\Order\OrderRepository" />
+    <preference for="Beckn\Checkout\Api\CancelRepositoryInterface" type="Beckn\Checkout\Model\Repository\Order\CancelRepository" />
+    <virtualType name="Magento\Sales\Model\ResourceModel\Order\Grid" type="Magento\Sales\Model\ResourceModel\Grid">
+        <arguments>
+            <argument name="columns" xsi:type="array">
+                <item name="order_type" xsi:type="string">sales_order.order_type</item>
+                <item name="payment_status" xsi:type="string">sales_order.payment_status</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="becknorder_listing_data_source" xsi:type="string">Beckn\Checkout\Model\ResourceModel\Order\Grid\Collection</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="razorpay_listing_data_source" xsi:type="string">Beckn\Checkout\Model\ResourceModel\RazorpayPaymentLink\Grid\Collection</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Beckn\Checkout\Model\ResourceModel\RazorpayPaymentLink\Collection">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">beckn_razorpay_payment_link</argument>
+            <argument name="eventPrefix" xsi:type="string">beckn_razorpay_log_collection</argument>
+            <argument name="eventObject" xsi:type="string">grid_collection</argument>
+            <argument name="resourceModel" xsi:type="string">Beckn\Checkout\Model\ResourceModel\RazorpayPaymentLink</argument>
+        </arguments>
+    </type>
+
+</config>
