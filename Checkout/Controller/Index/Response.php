@@ -201,20 +201,14 @@ class Response extends \Magento\Framework\App\Action\Action implements CsrfAware
                         $this->_manageCheckout->updateOrderAddress($order, $onConfirmResponse["message"]["order"]["billing"], $onConfirmResponse["message"]["order"]["fulfillment"]["end"]);
                         echo "<h1 align='center'>".__("Your order has been placed successfully.")."</h1>";
                     } catch (LocalizedException $e) {
-                        //$this->_logger->info("Order Localized Exception Here => " . $e->getMessage());
                         $onConfirmResponse["error"] = $this->_helper->acknowledgeError("", "Order Localized Exception Here => " . $e->getMessage());
                     } catch (\Exception $e) {
-                        //$this->_logger->info("Order Exception Here => " . $e->getMessage());
                         $onConfirmResponse["error"] = $this->_helper->acknowledgeError("", "Order Exception Here => " . $e->getMessage());
                     }
                 } else {
-                    //$this->_logger->info("Can't able to get Razorpay info with order id => " . $razorpayOrderId);
-                    //$this->_logger->info("Response => ", json_encode($razorpayOrderResponse));
                     $onConfirmResponse["error"] = $this->_helper->acknowledgeError("", "Can't able to get Razorpay info with order id ".$razorpayOrderId);
                 }
             } else {
-                //$this->_logger->info("Can't able to get Razorpay info with payment id => " . $params["razorpay_payment_id"]);
-                //$this->_logger->info("Response => ", json_encode($razorpayResponse));
                 $onConfirmResponse["error"] = $this->_helper->acknowledgeError("", "Can't able to get Razorpay info with payment id ".$params["razorpay_payment_id"]);
             }
             $this->_helper->sendResponse($apiUrl, $onConfirmResponse);
