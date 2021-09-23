@@ -5,7 +5,7 @@ namespace Beckn\Checkout\Model\ResourceModel\RazorpayPaymentLink;
 /**
  * Class Collection
  * @author Indglobal
- * @package Beckn\Bpp\Model\ResourceModel\BecknQuoteMask
+ * @package Beckn\Core\Model\ResourceModel\BecknQuoteMask
  */
 class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection {
 

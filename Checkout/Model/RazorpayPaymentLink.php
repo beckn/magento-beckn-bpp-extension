@@ -14,10 +14,10 @@ use Beckn\Checkout\Setup\UpgradeSchema;
 class RazorpayPaymentLink extends \Magento\Framework\Model\AbstractModel implements RazorpayPaymentLinkInterface, IdentityInterface
 {
     const NOROUTE_ENTITY_ID = "no-route";
-    const CACHE_TAG = UpgradeSchema::TABLE_NAME;
+    const CACHE_TAG = UpgradeSchema::TABLE_BECKN_RAZORPAY;
 
-    protected $_cacheTag = UpgradeSchema::TABLE_NAME;
-    protected $_eventPrefix = UpgradeSchema::TABLE_NAME;
+    protected $_cacheTag = UpgradeSchema::TABLE_BECKN_RAZORPAY;
+    protected $_eventPrefix = UpgradeSchema::TABLE_BECKN_RAZORPAY;
 
     /**
      * BecknQuoteMask constructor.

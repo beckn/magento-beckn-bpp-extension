@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<!--
+/**
+* @author Indglobal
+*/
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <subscriber_config>
+            <subscriber>
+                <subscriber_id>https://bpp3.beckn.org</subscriber_id>
+                <industry_domain>nic2021:52110</industry_domain>
+                <country>IN</country>
+                <city>std:8080</city>
+                <uri>https://bpp3.beckn.org/rest/V1/beckn/</uri>
+            </subscriber>
+        </subscriber_config>
+        <security_config>
+            <security>
+                <signing_public_key></signing_public_key>
+                <signing_private_key></signing_private_key>
+                <signing_key_pair></signing_key_pair>
+                <encryption_public_key></encryption_public_key>
+                <encryption_private_key></encryption_private_key>
+                <encryption_key_pair></encryption_key_pair>
+                <url></url>
+                <valid_from></valid_from>
+                <valid_until></valid_until>
+                <status></status>
+                <subscribe></subscribe>
+                <enable>0</enable>
+            </security>
+        </security_config>
+        <business_config>
+            <business>
+                <name>Indglobal</name>
+                <short_desc>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled.</short_desc>
+                <logo></logo>
+            </business>
+        </business_config>
+        <api_config>
+            <api>
+                <option>search,select,init,confirm,update,status,track,cancel,rating,support</option>
+            </api>
+        </api_config>
+        <fulfillment_config>
+            <fulfilment>
+                <type>store-pickup,home-delivery</type>
+            </fulfilment>
+        </fulfillment_config>
+        <payment_config>
+            <payment>
+                <types>ON-FULFILLMENT</types>
+                <method>cashondelivery</method>
+            </payment>
+        </payment_config>
+        <provider_config>
+            <number_of_provider>
+                <number>1</number>
+            </number_of_provider>
+            <provider_details>
+                <provider_name>Indglobal</provider_name>
+                <provider_id>453678</provider_id>
+                <email>support@example.com</email>
+                <phone>+919999999999</phone>
+                <short_desc>Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English.</short_desc>
+            </provider_details>
+            <support_info>
+                <phone>+919999999999</phone>
+                <email>supportbpp1@nomail.com</email>
+                <url>https://support.google.com</url>
+            </support_info>
+        </provider_config>
+    </default>
+</config>

@@ -1,0 +1,15 @@
+<?php
+/**
+ * @var \Beckn\Core\Block\Adminhtml\System\Config\ButtonGenerateEnckey $block
+ */
+?>
+
+<div class="pp-buttons-container">
+    <p>
+        <button id="<?php echo $block->getHtmlId() ?>"
+                onclick="setLocation('<?php /* @escapeNotVerified */ echo $block->getSendUrl() ?>')"
+                type="button">
+            <?php /* @escapeNotVerified */ echo $block->getButtonLabel() ?>
+        </button>
+    </p>
+</div>

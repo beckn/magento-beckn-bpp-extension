@@ -2,8 +2,8 @@
 
 namespace Beckn\Checkout\Controller\Index;
 
-use Beckn\Bpp\Helper\Data as Helper;
-use Beckn\Bpp\Model\BecknQuoteMask;
+use Beckn\Core\Helper\Data as Helper;
+use Beckn\Core\Model\BecknQuoteMask;
 use Beckn\Checkout\Model\ResourceModel\RazorpayPaymentLink\Collection;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Action\Context;
@@ -199,7 +199,7 @@ class Response extends \Magento\Framework\App\Action\Action implements CsrfAware
                         $this->_logger->info("Order Placed successfully " . $order->getIncrementId());
                         $onConfirmResponse["message"]["order"] = $this->_manageCheckout->prepareOnConfirmResponse($order, $onConfirmMessage, Helper::STATUS_PAID);
                         $this->_manageCheckout->updateOrderAddress($order, $onConfirmResponse["message"]["order"]["billing"], $onConfirmResponse["message"]["order"]["fulfillment"]["end"]);
-                        echo "<h1 align='center'>".__("Your order placed successfully. You will be redirected to merchant site soon.")."</h1>";
+                        echo "<h1 align='center'>".__("Your order has been placed successfully.")."</h1>";
                     } catch (LocalizedException $e) {
                         //$this->_logger->info("Order Localized Exception Here => " . $e->getMessage());
                         $onConfirmResponse["error"] = $this->_helper->acknowledgeError("", "Order Localized Exception Here => " . $e->getMessage());

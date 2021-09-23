@@ -23,6 +23,6 @@ class RazorpayPaymentLink extends \Magento\Framework\Model\ResourceModel\Db\Abst
 
     protected function _construct()
     {
-        $this->_init(UpgradeSchema::TABLE_NAME, "entity_id");
+        $this->_init(UpgradeSchema::TABLE_BECKN_RAZORPAY, "entity_id");
     }
 }

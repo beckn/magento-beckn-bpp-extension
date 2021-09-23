@@ -2,7 +2,7 @@
 
 namespace Beckn\Checkout\Model;
 
-use Beckn\Bpp\Helper\Data as Helper;
+use Beckn\Core\Helper\Data as Helper;
 use Magento\Customer\Model\Group;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Exception\CouldNotSaveException;
@@ -26,7 +26,7 @@ use Magento\Sales\Api\Data\OrderInterface;
 class ManageCheckout
 {
     /**
-     * @var \Beckn\Bpp\Model\BecknQuoteMask
+     * @var \Beckn\Core\Model\BecknQuoteMask
      */
     public $_becknQuoteMask;
 
@@ -68,7 +68,7 @@ class ManageCheckout
     private $_shipmentEstimationManagement;
 
     /**
-     * @var \Beckn\Bpp\Model\ManageCart
+     * @var \Beckn\Core\Model\ManageCart
      */
     protected $_manageCart;
 
@@ -84,7 +84,7 @@ class ManageCheckout
 
     /**
      * ManageCheckout constructor.
-     * @param \Beckn\Bpp\Model\BecknQuoteMask $becknQuoteMask
+     * @param \Beckn\Core\Model\BecknQuoteMask $becknQuoteMask
      * @param Helper $helper
      * @param \Magento\Quote\Api\GuestCartManagementInterface $guestCart
      * @param QuoteIdMaskFactory $quoteIdMaskFactory
@@ -92,11 +92,11 @@ class ManageCheckout
      * @param Quote $quote
      * @param CartRepositoryInterface $quoteRepository
      * @param ShippingMethodManagementInterface $shippingMethodManagement
-     * @param \Beckn\Bpp\Model\ManageCart $manageCart
+     * @param \Beckn\Core\Model\ManageCart $manageCart
      * @param Razorpay $razorpay
      */
     public function __construct(
-        \Beckn\Bpp\Model\BecknQuoteMask $becknQuoteMask,
+        \Beckn\Core\Model\BecknQuoteMask $becknQuoteMask,
         Helper $helper,
         \Magento\Quote\Api\GuestCartManagementInterface $guestCart,
         QuoteIdMaskFactory $quoteIdMaskFactory,
@@ -104,7 +104,7 @@ class ManageCheckout
         Quote $quote,
         CartRepositoryInterface $quoteRepository,
         ShippingMethodManagementInterface $shippingMethodManagement,
-        \Beckn\Bpp\Model\ManageCart $manageCart,
+        \Beckn\Core\Model\ManageCart $manageCart,
         Razorpay $razorpay
     )
     {
@@ -129,24 +129,25 @@ class ManageCheckout
         $billingAddressData = $data["order"]["billing"] ?? [];
         $billingAddress = [];
         if (!empty($billingAddressData)) {
-            $address = $billingAddressData["address"];
-            $telephone = $billingAddressData["phone"];
+            $address = $billingAddressData["address"] ?? "";
+            $telephone = $billingAddressData["phone"] ?? "";
             $name = array_map('trim', explode(' ', $billingAddressData["name"]));
             $firstName = $name[0] ?? "";
             $lastName = $name[1] ?? $firstName;
-            $regionData = $this->_helper->getRegionData($address["state"]);
+            $state = $address["state"] ?? "";
+            $regionData = $this->_helper->getRegionData($state);
             $regionId = $regionData["region_id"] ?? "";
             $billingAddress = [
                 'firstname' => $firstName,
                 'lastname' => $lastName,
                 'street' => $address["door"] ?? "" . " " . $address["name"] ?? "" . " " . $address["locality"] ?? "",
-                'city' => $address["city"],
-                'country_id' => $this->_helper->getCountryId($address["country"]),
-                'region' => $address["state"],
+                'city' => ($address["city"] == "") ? "bangalore" : $address["city"],
+                'country_id' => $this->_helper->loadCountryByIso($address["country"]),
+                'region' => $address["state"] ?? "",
                 'region_id' => $regionId,
-                'postcode' => $address["area_code"],
+                'postcode' => $address["area_code"] ?? "",
                 'telephone' => $telephone,
-                'email' => $billingAddressData["email"]
+                'email' => $billingAddressData["email"] ?? "test@nomail.com"
             ];
         }
         return $billingAddress;
@@ -164,21 +165,25 @@ class ManageCheckout
         if (!empty($shippingAddressData)) {
             $address = $shippingAddressData["location"]["address"];
             $telephone = $shippingAddressData["contact"]["phone"];
-            $email = $shippingAddressData["contact"]["email"];
+            $email = $shippingAddressData["contact"]["email"] ?? "";
+            if ($email == "") {
+                $email = "test@nomail.com";
+            }
             $name = array_map('trim', explode(' ', $billingAddressData["name"]));
             $firstName = $name[0] ?? "";
             $lastName = $name[1] ?? $firstName;
-            $regionData = $this->_helper->getRegionData($address["state"]);
+            $state = $address["state"] ?? "";
+            $regionData = $this->_helper->getRegionData($state);
             $regionId = $regionData["region_id"] ?? "";
             $shippingAddress = [
                 'firstname' => $firstName,
                 'lastname' => $lastName,
                 'street' => $address["door"] ?? "" . " " . $address["name"] ?? "" . " " . $address["locality"] ?? "",
-                'city' => $address["city"],
-                'country_id' => $this->_helper->getCountryId($address["country"]),
-                'region' => $address["state"],
+                'city' => ($address["city"] == "") ? "bangalore" : $address["city"],
+                'country_id' => $this->_helper->loadCountryByIso($address["country"]),
+                'region' => $address["state"] ?? "",
                 'region_id' => $regionId,
-                'postcode' => $address["area_code"],
+                'postcode' => $address["area_code"] ?? "",
                 'telephone' => $telephone,
                 'email' => $email
             ];
@@ -232,10 +237,11 @@ class ManageCheckout
     {
         try {
             $finalItems = $this->_manageCart->getFinalItem($quote);
+            $availableStoreId = $this->_manageCart->getQuoteProductStoreId($quote);
             $totalSegment = $this->_manageCart->getTotalSegment($quote);
-            $providerDetails = $this->_helper->getProvidersDetails();
-            $providerLocation = $this->_helper->getProvidersLocation();
-            $paymentMethod = $this->_helper->getConfigData("bpp_config/payment/method");
+            $providerDetails = $this->_helper->getProvidersDetails([], $availableStoreId);
+            $providerLocation = $this->_helper->getProvidersLocation($providerDetails);
+            $paymentMethod = $this->_helper->getConfigData(Helper::XML_PATH_SELECTED_PAYMENT_METHOD);
             $paymentParams = [];
             $status = Helper::STATUS_NOT_PAID;
             if ($paymentMethod == Helper::RAZORPAY) {
@@ -274,9 +280,11 @@ class ManageCheckout
     {
         try {
             $finalItems = $message["order"]["items"] ?? $message["initialized"]["items"];
-            $totalSegment = $message["order"]["quote"] ?? $message["initialized"]["quote"];
-            $providerDetails = $this->_helper->getProvidersDetails();
-            $providerLocation = $this->_helper->getProvidersLocation();
+            //$totalSegment = $message["order"]["quote"] ?? $message["initialized"]["quote"];
+            $totalSegment = $this->_manageCart->getOrderTotalSegment($order);
+            $availableStoreId = $this->_manageCart->getOrderProductStoreId($order);
+            $providerDetails = $this->_helper->getProvidersDetails([], $availableStoreId);
+            $providerLocation = $this->_helper->getProvidersLocation($providerDetails);
             return [
                 "id" => $order->getIncrementId(),
                 "state" => $order->getStatusLabel(),
@@ -305,7 +313,7 @@ class ManageCheckout
      */
     public function getPaymentData(string $status, $grandTotal, $data = [])
     {
-        $paymentType = $this->_helper->getConfigData("bpp_config/payment/types");
+        $paymentType = $this->_helper->getConfigData(Helper::XML_PATH_SELECTED_PAYMENT_TYPE);
         $paymentData = [
             //"uri" => $data["uri"] ?? "",
             //"tl_method" => $data["method"] ?? "",
@@ -324,7 +332,7 @@ class ManageCheckout
             $paymentData["uri"] = $data["uri"];
         }
         if (isset($data["method"])) {
-            $paymentData["uri"] = $data["method"];
+            $paymentData["tl_method"] = $data["method"];
         }
         return $paymentData;
     }
@@ -370,13 +378,13 @@ class ManageCheckout
     /**
      * @param CartInterface $quote
      * @param array $responseBody
-     * @return \Beckn\Bpp\Model\BecknQuoteMask
+     * @return \Beckn\Core\Model\BecknQuoteMask
      * @throws \Exception
      */
     public function saveResponseBody(CartInterface $quote, array $responseBody)
     {
         /**
-         * @var \Beckn\Bpp\Model\BecknQuoteMask $quoteMask
+         * @var \Beckn\Core\Model\BecknQuoteMask $quoteMask
          */
         $quoteMask = $this->_becknQuoteMask
             ->getCollection()
@@ -391,29 +399,30 @@ class ManageCheckout
 
     /**
      * @param array $fulfillmentAddress
+     * @param array $providerDetails
      * @return array
      */
-    public function getFulfillmentAddress(array $fulfillmentAddress)
+    public function getFulfillmentAddress(array $fulfillmentAddress, $providerDetails = [])
     {
-        $deliveryType = $this->_helper->getConfigData("bpp_config/fulfilment/type");
+        $deliveryType = $this->_helper->getConfigData(Helper::XML_PATH_FULFILMENT_TYPE);
         $selectedType = array_map('trim', explode(',', $deliveryType));
-        $location = $this->_helper->getLocations();
+        $location = $providerDetails["locations"][0] ?? [];
         return [
             "type" => $selectedType[0] ?? "",
             "tracking" => false,
             "start" => [
                 "location" => [
-                    "id" => $location["id"],
+                    "id" => $location["id"] ?? "",
                     "descriptor" => [
-                        "name" => $this->_helper->getConfigData("provider_config/provider_details/name"),
-                        "short_desc" => $this->_helper->getConfigData("provider_config/provider_details/short_desc"),
+                        "name" => $this->_helper->getConfigData(Helper::XML_PATH_PROVIDER_NAME),
+                        "short_desc" => $this->_helper->getConfigData(Helper::XML_PATH_PROVIDER_SHORT_DESC),
                         "images" => [$this->_helper->getProviderImage()],
                     ],
-                    "gps" => $location["gps"]
+                    "gps" => $location["gps"] ?? ""
                 ],
                 "contact" => [
-                    "phone" => $this->_helper->getConfigData("provider_config/provider_address/email"),
-                    "email" => $this->_helper->getConfigData("provider_config/provider_address/phone"),
+                    "phone" => $this->_helper->getConfigData(Helper::XML_PATH_PROVIDER_EMAIL),
+                    "email" => $this->_helper->getConfigData(Helper::XML_PATH_PROVIDER_PHONE),
                 ],
             ],
             "end" => $fulfillmentAddress["end"] ?? []

@@ -6,7 +6,7 @@ use Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray;
 
 /**
  * Class Options
- * @author Indoglobal
+ * @author Indglobal
  * @package Beckn\Checkout\Block\Adminhtml\CancelReason
  */
 class Options extends AbstractFieldArray

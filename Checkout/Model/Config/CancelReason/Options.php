@@ -13,7 +13,7 @@ use Magento\Framework\Serialize\SerializerInterface;
 
 /**
  * Class Options
- * @author Indoglobal
+ * @author Indglobal
  * @package Beckn\Checkout\Model\Config\CancelReason
  */
 class Options extends ConfigValue

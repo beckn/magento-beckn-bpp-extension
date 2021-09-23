@@ -1,0 +1,132 @@
+<?php
+/**
+ * @var \Beckn\Core\Block\Adminhtml\Location\Policy $block
+ */
+?>
+<?php
+$model = $block->getLocationPolicy();
+?>
+<div class="price_policy_container">
+    <div class="page-main-actions">
+        <div class="page-actions" data-ui-id="page-actions-toolbar-content-header">
+            <div class="page-actions-inner" data-title="Edit Order Item ">
+                <div class="page-actions-buttons">
+                    <button id="save_item" title="Save" type="button" class="action- scalable primary">
+                        <span><?= /* @escapeNotVerified */ __('Save') ?></span>
+                    </button>
+                </div>
+                <?php if($model->getEntityId()!=""): ?>
+                    <div class="page-actions-buttons">
+                        <button id="price_policy_delete" title="Delete" type="button" class="action- scalable primary " data-ui-id="add-order-item-back-button">
+                            <span><?= /* @escapeNotVerified */ __('Delete') ?></span>
+                        </button>
+                    </div>
+                <?php endif; ?>
+                <div class="page-actions-buttons">
+                    <button id="back" title="Back" type="button" class="action-default scalable back" onclick="setLocation('<?= /* @escapeNotVerified */ $this->getUrl('beckn/location/index') ?>')" data-ui-id="add-order-item-back-button">
+                        <span><?= /* @escapeNotVerified */ __('Back') ?></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="page:main-container" class="page-columns">
+        <div class="admin__old">
+            <div id="container" class="main-col">
+                <form action="<?= $block->getFormAction() ?>" method="post" id='location_policy_form' enctype="multipart/form-data">
+                    <input name="form_key" type="hidden" value="<?= /* @escapeNotVerified */ $block->getFormKey(); ?>">
+                    <?php if($model->getEntityId()!=""): ?>
+                        <input name="entity_id" type="hidden" value="<?= /* @escapeNotVerified */ $model->getEntityId(); ?>">
+                    <?php endif; ?>
+                    <div class="admin__field field col-3 main_col _required">
+                        <label class="label admin__field-label" for="name">
+                            <span><?= /* @escapeNotVerified */ __('Policy Name') ?></span>
+                        </label>
+                        <div class="admin__field-control control">
+                            <input id="name" name="name" title="Policy Name" class="input-text admin__control-text required-entry required-entry _required" type="text" aria-required="true" value="<?= $model->getName() ?>">
+                        </div>
+                    </div>
+                    <div class="admin__field field col-3 main_col _required">
+                        <label class="label admin__field-label" for="api_url">
+                            <span><?= /* @escapeNotVerified */ __('API Endpoint') ?></span>
+                        </label>
+                        <div class="admin__field-control control">
+                            <input id="api_url" name="api_url" title="API Endpoint" class="input-text admin__control-text required-entry required-entry _required" type="text" aria-required="true" value="<?= $model->getApiUrl() ?>">
+                        </div>
+                    </div>
+                    <div class="admin__field field col-3 main_col _required">
+                        <label class="label admin__field-label" for="method">
+                            <span><?= /* @escapeNotVerified */ __('Method') ?></span>
+                        </label>
+                        <div class="admin__field-control control method_wraper">
+                            <div class="each_method">
+                                <label class="label admin__field-label col-3" for="method_get">
+                                    <span><?= /* @escapeNotVerified */ __('GET') ?></span>
+                                </label>
+                                <input type="radio" class="required-entry required-entry _required" name="method" id="method_get" value="get" <?php if($model->getMethod()=="get"){ echo "checked"; } ?>>
+                            </div>
+                            <div class="each_method">
+                                <label class="label admin__field-label col-3" for="method_post">
+                                    <span><?= /* @escapeNotVerified */ __('POST') ?></span>
+                                </label>
+                                <input type="radio" class="required-entry required-entry _required"  name="method" id="method_post" value="post" <?php if($model->getMethod()=="post"){ echo "checked"; } ?>>
+                            </div>
+                        </div>
+                    </div>
+                    <?= $this->getChildHtml("request_header_block"); ?>
+                    <?= $this->getChildHtml("request_bodylocation_block"); ?>
+                    <div class="admin__field field col-3 main_col _required">
+                        <label class="label admin__field-label" for="response_body_path">
+                            <span><?= /* @escapeNotVerified */ __('Response body path to location coordinates') ?></span>
+                        </label>
+                        <div class="admin__field-control control">
+                            <input id="response_body_path" name="response_body_path" title="Response body path to location coordinates" class="input-text admin__control-text required-entry required-entry _required" type="text" aria-required="true" value="<?= $model->getResponseBodyPath() ?>">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    require([
+        'jquery',
+        'Magento_Ui/js/modal/confirm'
+    ], function ($, confirmation) {
+        $('#save_item').click(function(){
+            $("form#location_policy_form").submit();
+        });
+        $('#price_policy_delete').on('click', function (e){
+            e.preventDefault();
+            confirmation({
+                title: 'Delete',
+                content: 'Do you want to delete this record?',
+                actions: {
+                    confirm: function () {
+                        setLocation('<?= /* @escapeNotVerified */ $this->getUrl('beckn/location/delete', ["id" => $model->getEntityId()]) ?>');
+                    },
+                    cancel: function () {
+                        return false;
+                    }
+                }
+            });
+        });
+    });
+</script>
+<script type="text/x-magento-init">
+    {
+        "#location_policy_form": {
+            "validation": {}
+        }
+    }
+</script>
+<style type="text/css">
+    .price_policy_container .main_col {width: 50%;margin: 15px auto;}
+    .each_policy .col-6, .each_headers .col-6 {width: 50%;padding: 10px;}
+    .each_method {width: 20%;margin-top: 10px;}
+    .method_wraper {display: flex;}
+    .each_policy, .each_headers {display: flex;position: relative;}
+    .each_policy .col-6:first-child, .each_headers .col-6:first-child {padding-left: 0px;}
+    .each_policy .col-6:last-child, .each_headers .col-6:last-child {padding-right: 0px;}
+    .remove_each_policy, .remove_each_policy_header {position: absolute;right: -75px;top: 28px;}
+</style>

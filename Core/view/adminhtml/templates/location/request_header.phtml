@@ -1,0 +1,110 @@
+<?php
+/**
+ * @var \Beckn\Core\Block\Adminhtml\Price\Policy $block
+ */
+?>
+<?php $model = $block->getLocationPolicy(); ?>
+<?php $requestHeader = $model->getRequestHeader(); ?>
+<div class="admin__field field col-3 main_col">
+    <label class="label admin__field-label" for="request_headers">
+        <span><?= /* @escapeNotVerified */ __('Headers') ?></span>
+    </label>
+    <div class="policy_headers">
+        <?php if(!empty($requestHeader) && $requestHeader->getSize()): ?>
+            <?php foreach ($requestHeader->getData() as $key => $item): ?>
+                <div class="each_headers row">
+                    <div class="col-6">
+                        <label class="label admin__field-label">
+                            <span><?= /* @escapeNotVerified */ __('Key') ?></span>
+                        </label>
+                        <div class="admin__field-control control">
+                            <input name="request_headers[key][]" title="Key" class="input-text admin__control-text" type="text" aria-required="true" value="<?= $item["key"] ?>">
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <label class="label admin__field-label">
+                            <span><?= /* @escapeNotVerified */ __('Value') ?></span>
+                        </label>
+                        <div class="admin__field-control control">
+                            <input name="request_headers[value][]" title="Values" class="input-text admin__control-text" type="text" aria-required="true" value="<?= $item["value"] ?>">
+                        </div>
+                    </div>
+                    <?php if($key!=0): ?>
+                        <div class="primary remove_each_policy_header">
+                            <button type="button" class="remove_header">
+                            <span><?= __('Delete') ?><span>
+                            </button>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <div class="each_headers row">
+                <div class="col-6">
+                    <label class="label admin__field-label">
+                        <span><?= /* @escapeNotVerified */ __('Key') ?></span>
+                    </label>
+                    <div class="admin__field-control control">
+                        <input name="request_headers[key][]" title="Key" class="input-text admin__control-text" type="text" aria-required="true" value="">
+                    </div>
+                </div>
+                <div class="col-6">
+                    <label class="label admin__field-label">
+                        <span><?= /* @escapeNotVerified */ __('Value') ?></span>
+                    </label>
+                    <div class="admin__field-control control">
+                        <input name="request_headers[value][]" title="Values" class="input-text admin__control-text" type="text" aria-required="true" value="">
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
+    </div>
+    <div class="actions-toolbar admin__field field">
+        <div class="primary">
+            <button type="button" id="add_more_headers" class="action" title="<?php echo __('Add More') ?>">
+                <span><?php echo __('Add More') ?></span>
+            </button>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    require([
+        'jquery',
+        'Magento_Ui/js/modal/modal',
+        'mage/url',
+        'mage/translate',
+        'mage/calendar'
+    ], function ($, modal, url, $t) {
+        $('#add_more_headers').click(function () {
+            var html = '<div class="each_headers row">' +
+                '<div class="col-6">' +
+                '<label class="label admin__field-label">' +
+                '<span>Key</span>' +
+                '</label>' +
+                '<div class="admin__field-control control">' +
+                '<input name="request_headers[key][]" title="Key" class="input-text admin__control-text" type="text" aria-required="true" value="">' +
+                '</div>' +
+                '</div>' +
+                '<div class="col-6">' +
+                '<label class="label admin__field-label">' +
+                '<span>Value</span>' +
+                '</label>' +
+                '<div class="admin__field-control control">' +
+                '<input name="request_headers[value][]" title="Values" class="input-text admin__control-text" type="text" aria-required="true" value="">' +
+                '</div>' +
+                '</div>' +
+                '<div class="primary remove_each_policy_header">'+
+                '<button type="button" class="remove_header">'+
+                '<span>Delete<span>'+
+                '</button>'+
+                '</div>'+
+                '</div>';
+            $('.policy_headers').append(html);
+        });
+        jQuery(document).on('click', '.remove_each_policy_header', function (e) {
+            e.preventDefault();
+            jQuery(this).closest('.each_headers').remove();
+            return false;
+        });
+    });
+</script>

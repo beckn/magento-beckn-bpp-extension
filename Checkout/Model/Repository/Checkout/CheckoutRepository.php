@@ -2,7 +2,7 @@
 
 namespace Beckn\Checkout\Model\Repository\Checkout;
 
-use Beckn\Bpp\Helper\Data as Helper;
+use Beckn\Core\Helper\Data as Helper;
 use Beckn\Checkout\Model\Config\FilterOption\OrderType;
 use Beckn\Checkout\Model\Config\FilterOption\PaymentStatus;
 use Magento\Framework\Exception\CouldNotSaveException;
@@ -49,7 +49,7 @@ class CheckoutRepository implements \Beckn\Checkout\Api\CheckoutRepositoryInterf
     protected $_manageCheckout;
 
     /**
-     * @var \Beckn\Bpp\Model\ManageCart
+     * @var \Beckn\Core\Model\ManageCart
      */
     protected $_manageCart;
 
@@ -70,7 +70,7 @@ class CheckoutRepository implements \Beckn\Checkout\Api\CheckoutRepositoryInterf
      * @param CartRepositoryInterface $quoteRepository
      * @param \Magento\Quote\Api\Data\CartItemInterfaceFactory $cartItemInterfaceFactory
      * @param \Beckn\Checkout\Model\ManageCheckout $manageCheckout
-     * @param \Beckn\Bpp\Model\ManageCart $manageCart
+     * @param \Beckn\Core\Model\ManageCart $manageCart
      * @param \Magento\Checkout\Model\Session $checkoutSession
      * @param \Magento\Quote\Model\QuoteManagement $quoteManagement
      */
@@ -80,7 +80,7 @@ class CheckoutRepository implements \Beckn\Checkout\Api\CheckoutRepositoryInterf
         CartRepositoryInterface $quoteRepository,
         \Magento\Quote\Api\Data\CartItemInterfaceFactory $cartItemInterfaceFactory,
         \Beckn\Checkout\Model\ManageCheckout $manageCheckout,
-        \Beckn\Bpp\Model\ManageCart $manageCart,
+        \Beckn\Core\Model\ManageCart $manageCart,
         \Magento\Checkout\Model\Session $checkoutSession,
         \Magento\Quote\Model\QuoteManagement $quoteManagement
     )
@@ -101,9 +101,17 @@ class CheckoutRepository implements \Beckn\Checkout\Api\CheckoutRepositoryInterf
      * @return string|void
      * @throws CouldNotSaveException
      * @throws NoSuchEntityException
+     * @throws \SodiumException
      */
     public function manageCheckout($context, $message)
     {
+        $this->_logger->info("Order request log");
+        $this->_logger->info(json_encode($message));
+        $authStatus = $this->_helper->validateAuth($context, $message);
+        if(!$authStatus){
+            echo $this->_helper->unauthorizedResponse();
+            exit();
+        }
         $validateMessage = [];
         if (is_callable('fastcgi_finish_request')) {
             $acknowledge = $this->_helper->getAcknowledge($context);

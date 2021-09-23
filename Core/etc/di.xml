@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<!--
+/**
+* @author Indglobal
+*/
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Beckn\Core\Api\SubscribeRepositoryInterface" type="Beckn\Core\Model\Repository\Subscribe\SubscribeRepository" />
+    <preference for="Beckn\Core\Api\Data\SubscribeInterface" type="Beckn\Core\Model\Data\Subscribe\Subscribe" />
+    <preference for="Magento\Backend\Block\System\Store\Edit\Form\Store" type="Beckn\Core\Block\System\Store\Edit\Form\Store" />
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="beckn_pricing_listing_data_source" xsi:type="string">Beckn\Core\Model\ResourceModel\PricePolicy\Grid\Collection</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Beckn\Core\Model\ResourceModel\PricePolicy\Grid\Collection">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">beckn_price_policy</argument>
+            <argument name="eventPrefix" xsi:type="string">beckn_pricing_log_collection</argument>
+            <argument name="eventObject" xsi:type="string">grid_collection</argument>
+            <argument name="resourceModel" xsi:type="string">Beckn\Core\Model\ResourceModel\PricePolicy</argument>
+        </arguments>
+    </type>
+
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="beckn_location_listing_data_source" xsi:type="string">Beckn\Core\Model\ResourceModel\LocationPolicy\Grid\Collection</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Beckn\Core\Model\ResourceModel\LocationPolicy\Grid\Collection">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">beckn_location_policy</argument>
+            <argument name="eventPrefix" xsi:type="string">beckn_location_log_collection</argument>
+            <argument name="eventObject" xsi:type="string">grid_collection</argument>
+            <argument name="resourceModel" xsi:type="string">Beckn\Core\Model\ResourceModel\LocationPolicy</argument>
+        </arguments>
+    </type>
+
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="beckn_fulfillment_listing_data_source" xsi:type="string">Beckn\Core\Model\ResourceModel\FulfillmentPolicy\Grid\Collection</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Beckn\Core\Model\ResourceModel\FulfillmentPolicy\Grid\Collection">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">beckn_fulfillment_policy</argument>
+            <argument name="eventPrefix" xsi:type="string">beckn_fulfillment_log_collection</argument>
+            <argument name="eventObject" xsi:type="string">grid_collection</argument>
+            <argument name="resourceModel" xsi:type="string">Beckn\Core\Model\ResourceModel\FulfillmentPolicy</argument>
+        </arguments>
+    </type>
+</config>

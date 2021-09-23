@@ -2,7 +2,7 @@
 
 namespace Beckn\Checkout\Model;
 
-use Beckn\Bpp\Helper\Data as Helper;
+use Beckn\Core\Helper\Data as Helper;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Exception\LocalizedException;
@@ -178,8 +178,7 @@ class Razorpay
     {
         return [
             "amount" => (string)$quote->getGrandTotal() * 100,
-            //"currency" => $quote->getQuoteCurrencyCode(),
-            "currency" => "INR",
+            "currency" => $quote->getQuoteCurrencyCode(),
             "accept_partial" => false,
             "expire_by" => $this->getExpiryTimestamp(),
             "reference_id" => $quote->getId(),

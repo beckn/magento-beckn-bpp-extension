@@ -41,4 +41,10 @@
             <resource ref="anonymous" />
         </resources>
     </route>
+    <route url="/V1/beckn/track" method="POST">
+        <service class="Beckn\Checkout\Api\TrackRepositoryInterface" method="trackOrder"/>
+        <resources>
+            <resource ref="anonymous" />
+        </resources>
+    </route>
 </routes>

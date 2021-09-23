@@ -4,7 +4,7 @@ namespace Beckn\Checkout\Controller\Adminhtml\Razorpay;
 
 /**
  * Class Index
- * @author Indoglobal
+ * @author Indglobal
  * @package Beckn\Checkout\Controller\Adminhtml\Razorpay
  */
 class Index extends \Magento\Backend\App\Action

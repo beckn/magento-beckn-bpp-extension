@@ -7,7 +7,7 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
     <module name="Beckn_Checkout" setup_version="1.0.2">
         <sequence>
-            <module name="Beckn_Bpp"/>
+            <module name="Beckn_Core"/>
         </sequence>
     </module>
 </config>

@@ -2,7 +2,7 @@
 
 namespace Beckn\Checkout\Model\Repository\Order;
 
-use Beckn\Bpp\Helper\Data as Helper;
+use Beckn\Core\Helper\Data as Helper;
 use Beckn\Checkout\Model\Config\FilterOption\OrderType;
 use Beckn\Checkout\Model\Config\FilterOption\PaymentStatus;
 use Beckn\Checkout\Model\ManageOrder;
@@ -15,7 +15,7 @@ use Psr\Log\LoggerInterface;
 
 /**
  * Class OrderRepository
- * @author Indoglobal
+ * @author Indglobal
  * @package Beckn\Checkout\Model\Repository\Order
  */
 class OrderRepository implements \Beckn\Checkout\Api\OrderRepositoryInterface
@@ -36,7 +36,7 @@ class OrderRepository implements \Beckn\Checkout\Api\OrderRepositoryInterface
     protected $_manageCheckout;
 
     /**
-     * @var \Beckn\Bpp\Model\ManageCart
+     * @var \Beckn\Core\Model\ManageCart
      */
     protected $_manageCart;
 
@@ -49,7 +49,7 @@ class OrderRepository implements \Beckn\Checkout\Api\OrderRepositoryInterface
         Helper $helper,
         LoggerInterface $logger,
         \Beckn\Checkout\Model\ManageCheckout $manageCheckout,
-        \Beckn\Bpp\Model\ManageCart $manageCart,
+        \Beckn\Core\Model\ManageCart $manageCart,
         ManageOrder $manageOrder
     )
     {
@@ -64,10 +64,16 @@ class OrderRepository implements \Beckn\Checkout\Api\OrderRepositoryInterface
      * @param mixed $context
      * @param mixed $message
      * @return string|void
+     * @throws \SodiumException
      */
     public function manageOrder($context, $message)
     {
-        $validateMessage = [];
+        $authStatus = $this->_helper->validateAuth($context, $message);
+        if(!$authStatus){
+            echo $this->_helper->unauthorizedResponse();
+            exit();
+        }
+        $validateMessage = $this->_helper->validateApiRequest($context, $message);
         if (is_callable('fastcgi_finish_request')) {
             $acknowledge = $this->_helper->getAcknowledge($context);
             $validateMessage = $this->_helper->validateOrderStatusRequest($context, $message);
@@ -128,10 +134,16 @@ class OrderRepository implements \Beckn\Checkout\Api\OrderRepositoryInterface
      * @param mixed $context
      * @param mixed $message
      * @return string|void
+     * @throws \SodiumException
      */
     public function manageSupport($context, $message)
     {
-        $validateMessage = [];
+        $authStatus = $this->_helper->validateAuth($context, $message);
+        if(!$authStatus){
+            echo $this->_helper->unauthorizedResponse();
+            exit();
+        }
+        $validateMessage = $this->_helper->validateApiRequest($context, $message);
         if (is_callable('fastcgi_finish_request')) {
             $acknowledge = $this->_helper->getAcknowledge($context);
             $validateMessage = $this->_helper->validateOrderStatusRequest($context, $message);
@@ -174,9 +186,9 @@ class OrderRepository implements \Beckn\Checkout\Api\OrderRepositoryInterface
         $onSupportResponse["context"] = $this->_helper->getContext($context);
         $apiUrl = $this->_helper->getBapUri(Helper::ON_SUPPORT, $context);
         $onSupportResponse["message"] = [
-            "phone" => $this->_helper->getConfigData("provider_config/support_info/phone"),
-            "email" => $this->_helper->getConfigData("provider_config/support_info/email"),
-            "uri" => $this->_helper->getConfigData("provider_config/support_info/url"),
+            "phone" => $this->_helper->getConfigData(Helper::XML_PATH_SUPPORT_PHONE),
+            "email" => $this->_helper->getConfigData(Helper::XML_PATH_SUPPORT_EMAIL),
+            "uri" => $this->_helper->getConfigData(Helper::XML_PATH_SUPPORT_URL),
         ];
         return $this->_helper->sendResponse($apiUrl, $onSupportResponse);
     }

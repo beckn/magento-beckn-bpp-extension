@@ -7,7 +7,7 @@ use Magento\Framework\Exception\NoSuchEntityException;
 /**
  * Interface CheckoutRepositoryInterface
  * @author Indglobal
- * @package Beckn\Bpp\Api
+ * @package Beckn\Core\Api
  */
 interface CancelRepositoryInterface
 {

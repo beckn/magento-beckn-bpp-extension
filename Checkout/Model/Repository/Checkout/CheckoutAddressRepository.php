@@ -2,7 +2,7 @@
 
 namespace Beckn\Checkout\Model\Repository\Checkout;
 
-use Beckn\Bpp\Helper\Data as Helper;
+use Beckn\Core\Helper\Data as Helper;
 use Magento\Checkout\Model\Type\Onepage;
 use Magento\Customer\Model\Group;
 use Magento\Framework\Exception\CouldNotSaveException;
@@ -48,7 +48,7 @@ class CheckoutAddressRepository implements \Beckn\Checkout\Api\CheckoutAddressRe
     protected $_manageCheckout;
 
     /**
-     * @var \Beckn\Bpp\Model\ManageCart
+     * @var \Beckn\Core\Model\ManageCart
      */
     protected $_manageCart;
 
@@ -59,7 +59,7 @@ class CheckoutAddressRepository implements \Beckn\Checkout\Api\CheckoutAddressRe
      * @param CartRepositoryInterface $quoteRepository
      * @param \Magento\Quote\Api\Data\CartItemInterfaceFactory $cartItemInterfaceFactory
      * @param \Beckn\Checkout\Model\ManageCheckout $manageCheckout
-     * @param \Beckn\Bpp\Model\ManageCart $manageCart
+     * @param \Beckn\Core\Model\ManageCart $manageCart
      */
     public function __construct(
         Helper $helper,
@@ -67,7 +67,7 @@ class CheckoutAddressRepository implements \Beckn\Checkout\Api\CheckoutAddressRe
         CartRepositoryInterface $quoteRepository,
         \Magento\Quote\Api\Data\CartItemInterfaceFactory $cartItemInterfaceFactory,
         \Beckn\Checkout\Model\ManageCheckout $manageCheckout,
-        \Beckn\Bpp\Model\ManageCart $manageCart
+        \Beckn\Core\Model\ManageCart $manageCart
     )
     {
         $this->_helper = $helper;
@@ -85,7 +85,12 @@ class CheckoutAddressRepository implements \Beckn\Checkout\Api\CheckoutAddressRe
      */
     public function manageAddress($context, $message)
     {
-        $validateMessage = [];
+        $authStatus = $this->_helper->validateAuth($context, $message);
+        if(!$authStatus){
+            echo $this->_helper->unauthorizedResponse();
+            exit();
+        }
+        $validateMessage = $this->_helper->validateApiRequest($context, $message);
         if (is_callable('fastcgi_finish_request')) {
             $acknowledge = $this->_helper->getAcknowledge($context);
             if (!empty($validateMessage['message'])) {
@@ -126,6 +131,8 @@ class CheckoutAddressRepository implements \Beckn\Checkout\Api\CheckoutAddressRe
      */
     private function processAddress($context, $message)
     {
+        $this->_logger->info("Address data here");
+        $this->_logger->info(json_encode($message));
         $onInitResponse = [];
         $onInitResponse["context"] = $this->_helper->getContext($context);
         $apiUrl = $this->_helper->getBapUri(Helper::ON_INIT, $context);
@@ -147,8 +154,9 @@ class CheckoutAddressRepository implements \Beckn\Checkout\Api\CheckoutAddressRe
             }
             $billingEmail = $this->_manageCheckout->getBillingEmail($message);
             if ($billingEmail == "") {
-                $onInitResponse["error"] = $this->_helper->acknowledgeError("", __("Shipping or Billing address is missing."));
-                return $this->_helper->sendResponse($apiUrl, $onInitResponse);
+                $billingEmail = "test@nomail.com";
+//                $onInitResponse["error"] = $this->_helper->acknowledgeError("", __("Shipping or Billing address is missing."));
+//                return $this->_helper->sendResponse($apiUrl, $onInitResponse);
             }
             $quote->getBillingAddress()->addData($billingAddress);
             $quote->getShippingAddress()->addData($shippingAddress);

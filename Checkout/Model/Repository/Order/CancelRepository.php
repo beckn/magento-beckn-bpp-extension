@@ -2,7 +2,7 @@
 
 namespace Beckn\Checkout\Model\Repository\Order;
 
-use Beckn\Bpp\Helper\Data as Helper;
+use Beckn\Core\Helper\Data as Helper;
 use Beckn\Checkout\Model\ManageOrder;
 use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Exception\InputException;
@@ -13,7 +13,7 @@ use Psr\Log\LoggerInterface;
 
 /**
  * Class CancelRepository
- * @author Indoglobal
+ * @author Indglobal
  * @package Beckn\Checkout\Model\Repository\Order
  */
 class CancelRepository implements \Beckn\Checkout\Api\CancelRepositoryInterface
@@ -34,7 +34,7 @@ class CancelRepository implements \Beckn\Checkout\Api\CancelRepositoryInterface
     protected $_manageCheckout;
 
     /**
-     * @var \Beckn\Bpp\Model\ManageCart
+     * @var \Beckn\Core\Model\ManageCart
      */
     protected $_manageCart;
 
@@ -48,14 +48,14 @@ class CancelRepository implements \Beckn\Checkout\Api\CancelRepositoryInterface
      * @param Helper $helper
      * @param LoggerInterface $logger
      * @param \Beckn\Checkout\Model\ManageCheckout $manageCheckout
-     * @param \Beckn\Bpp\Model\ManageCart $manageCart
+     * @param \Beckn\Core\Model\ManageCart $manageCart
      * @param ManageOrder $manageOrder
      */
     public function __construct(
         Helper $helper,
         LoggerInterface $logger,
         \Beckn\Checkout\Model\ManageCheckout $manageCheckout,
-        \Beckn\Bpp\Model\ManageCart $manageCart,
+        \Beckn\Core\Model\ManageCart $manageCart,
         ManageOrder $manageOrder
     )
     {
@@ -80,10 +80,16 @@ class CancelRepository implements \Beckn\Checkout\Api\CancelRepositoryInterface
      * @param mixed $context
      * @param mixed $message
      * @return string|void
+     * @throws \SodiumException
      */
     public function cancelOrder($context, $message)
     {
-        $validateMessage = [];
+        $authStatus = $this->_helper->validateAuth($context, $message);
+        if(!$authStatus){
+            echo $this->_helper->unauthorizedResponse();
+            exit();
+        }
+        $validateMessage = $this->_helper->validateApiRequest($context, $message);
         if (is_callable('fastcgi_finish_request')) {
             $acknowledge = $this->_helper->getAcknowledge($context);
             $validateMessage = $this->_helper->validateOrderStatusRequest($context, $message);

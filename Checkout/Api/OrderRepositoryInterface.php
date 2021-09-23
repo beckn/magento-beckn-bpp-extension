@@ -7,7 +7,7 @@ use Magento\Framework\Exception\NoSuchEntityException;
 /**
  * Interface OrderRepositoryInterface
  * @author Indglobal
- * @package Beckn\Bpp\Api
+ * @package Beckn\Core\Api
  */
 interface OrderRepositoryInterface
 {

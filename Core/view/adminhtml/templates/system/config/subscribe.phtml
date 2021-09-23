@@ -1,0 +1,15 @@
+<?php
+/**
+ * @var \Beckn\Core\Block\Adminhtml\System\Config\ButtonSubscribe $block
+ */
+?>
+
+<div class="pp-buttons-container">
+    <p>
+        <button id="<?php echo $block->getHtmlId() ?>"
+                onclick="setLocation('<?php /* @escapeNotVerified */ echo $block->getSendUrl() ?>')"
+                type="button">
+            <?php /* @escapeNotVerified */ echo __('Subscribe') ?>
+        </button>
+    </p>
+</div>

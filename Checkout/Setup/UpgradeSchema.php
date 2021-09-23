@@ -16,16 +16,16 @@ use Magento\Framework\DB\Ddl\Table;
 class UpgradeSchema implements UpgradeSchemaInterface
 {
 
-    const TABLE_NAME = 'beckn_razorpay_payment_link';
+    const TABLE_BECKN_RAZORPAY = 'beckn_razorpay_payment_link';
     const DEFAULT_ORDER_TYPE = 'store';
 
     public function upgrade(SchemaSetupInterface $setup, ModuleContextInterface $context)
     {
-        if (version_compare($context->getVersion(), '1.0.1', '<=')) {
+        if (version_compare($context->getVersion(), '1.0.1', '<=') && !$setup->getConnection()->isTableExists(self::TABLE_BECKN_RAZORPAY)) {
             $installer = $setup;
             $installer->startSetup();
             $table = $installer->getConnection()
-                ->newTable($installer->getTable(self::TABLE_NAME))
+                ->newTable($installer->getTable(self::TABLE_BECKN_RAZORPAY))
                 ->addColumn("entity_id", Table::TYPE_INTEGER, null, ["identity" => true, "unsigned" => true, "nullable" => false, "primary" => true], "Entity Id")
                 ->addColumn("quote_id", Table::TYPE_INTEGER, 10, ["nullable" => true, "unsigned" => true], "Quote Id")
                 ->addColumn("payment_link", Table::TYPE_TEXT, 255, ["nullable" => true, "default" => null], "Payment Link")
@@ -36,10 +36,10 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 ->addColumn('updated_at', Table::TYPE_TIMESTAMP, null, ['nullable' => false, 'default' => Table::TIMESTAMP_INIT_UPDATE], 'Updated At')
                 ->setComment("BECKN_RAZORPAY_PAYMENT_LINK")
                 ->addIndex(
-                    $installer->getIdxName(self::TABLE_NAME, ['quote_id']),
+                    $installer->getIdxName(self::TABLE_BECKN_RAZORPAY, ['quote_id']),
                     ['quote_id']
                 )->addIndex(
-                    $installer->getIdxName(self::TABLE_NAME, ['payment_id']),
+                    $installer->getIdxName(self::TABLE_BECKN_RAZORPAY, ['payment_id']),
                     ['payment_id']
                 );
             $installer->getConnection()->createTable($table);

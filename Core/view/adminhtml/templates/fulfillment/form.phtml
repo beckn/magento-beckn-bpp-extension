@@ -1,0 +1,192 @@
+<?php
+/**
+ * @var \Beckn\Core\Block\Adminhtml\Fulfillment\Policy $block
+ */
+?>
+<?php
+$model = $block->getFulfillmentPolicy();
+?>
+<div class="price_policy_container">
+    <div class="page-main-actions">
+        <div class="page-actions" data-ui-id="page-actions-toolbar-content-header">
+            <div class="page-actions-inner" data-title="Edit Order Item ">
+                <div class="page-actions-buttons">
+                    <button id="save_item" title="Save" type="button" class="action- scalable primary">
+                        <span><?= /* @escapeNotVerified */ __('Save') ?></span>
+                    </button>
+                </div>
+                <?php if($model->getEntityId()!=""): ?>
+                    <div class="page-actions-buttons">
+                        <button id="price_policy_delete" title="Delete" type="button" class="action- scalable primary " data-ui-id="add-order-item-back-button">
+                            <span><?= /* @escapeNotVerified */ __('Delete') ?></span>
+                        </button>
+                    </div>
+                <?php endif; ?>
+                <div class="page-actions-buttons">
+                    <button id="back" title="Back" type="button" class="action-default scalable back" onclick="setLocation('<?= /* @escapeNotVerified */ $this->getUrl('beckn/fulfillment/index') ?>')" data-ui-id="add-order-item-back-button">
+                        <span><?= /* @escapeNotVerified */ __('Back') ?></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="page:main-container" class="page-columns">
+        <div class="admin__old">
+            <div id="container" class="main-col">
+                <form action="<?= $block->getFormAction() ?>" method="post" id='fulfillment_policy_form' enctype="multipart/form-data">
+                    <input name="form_key" type="hidden" value="<?= /* @escapeNotVerified */ $block->getFormKey(); ?>">
+                    <?php if($model->getEntityId()!=""): ?>
+                        <input name="entity_id" type="hidden" value="<?= /* @escapeNotVerified */ $model->getEntityId(); ?>">
+                    <?php endif; ?>
+                    <div class="admin__field field col-3 main_col _required">
+                        <label class="label admin__field-label" for="name">
+                            <span><?= /* @escapeNotVerified */ __('Policy Name') ?></span>
+                        </label>
+                        <div class="admin__field-control control">
+                            <input id="name" name="name" title="Policy Name" class="input-text admin__control-text required-entry required-entry _required" type="text" aria-required="true" value="<?= $model->getName() ?>">
+                        </div>
+                    </div>
+                    <div class="admin__field field col-3 main_col _required">
+                        <label class="label admin__field-label">
+                            <strong><u><?= /* @escapeNotVerified */ __('Fulfillment Area') ?></u></strong>
+                        </label>
+                        <div class="fulfillment_area">
+                            <label class="label admin__field-label" for="location_type">
+                                <span><?= /* @escapeNotVerified */ __('Location Type') ?></span>
+                            </label>
+                            <?php
+                                $locationType = $block->getLocationType();
+                            ?>
+                            <select name='type' class='select_location' id="location_type">
+                                <?php foreach($locationType as $option) {
+                                    if($option['value'] == '')
+                                    { ?>
+                                        <option value="">Please select Loction type</option>
+                                    <?php } else{ ?>
+                                        <option value="<?php echo $option['value'] ?>"><?php echo $option['label'] ?></option>
+                                    <?php }} ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="admin__field field col-3 main_col _required">
+                        <div>
+                            <label class="label admin__field-label" for="">
+                                <span><?= /* @escapeNotVerified */ __('Location Params') ?></span>
+                            </label>
+                        </div>
+                        <label class="label admin__field-label" for="center">
+                            <span><?= /* @escapeNotVerified */ __('Center') ?></span>
+                        </label>
+                        <div class="admin__field-control control">
+                            <input id="center" name="center" title="Center" class="input-text admin__control-text required-entry required-entry _required" type="text" aria-required="true" value="<?= $model->getCenter() ?>">
+                        </div>
+                        <label class="label admin__field-label" for="radius">
+                            <span><?= /* @escapeNotVerified */ __('Radius (in KM)') ?></span>
+                        </label>
+                        <div class="admin__field-control control">
+                            <input id="radius" name="radius" title="Radius" class="input-text admin__control-text required-entry required-entry _required" type="text" aria-required="true" value="<?= $model->getRadius() ?>">
+                        </div>
+                    </div>
+                    <div class="admin__field field col-3 main_col _required">
+                        <div class="location_params">
+                            <label class="label admin__field-label">
+                                <strong><u><?= /* @escapeNotVerified */ __('Agents') ?></u></strong>
+                            </label>
+                            <div class="admin__field-control control method_wraper">
+                                <div class="each_method">
+                                    <label class="label admin__field-label col-3" >
+                                        <span><?= /* @escapeNotVerified */ __('Enabled') ?></span>
+                                    </label>
+                                </div>
+                                <div class="each_method">
+                                    <input type="radio" class="required-entry required-entry _required" name="agents" id="agent_yes" value="1" <?php if($model->getAgents()=="1"){ echo "checked"; } ?>>
+                                    <label class="label admin__field-label col-3" for="agent_yes">
+                                        <span><?= /* @escapeNotVerified */ __('Yes') ?></span>
+                                    </label>
+                                </div>
+                                <div class="each_method">
+                                    <input type="radio" class="required-entry required-entry _required"  name="agents" id="agent_no" value="0" <?php if($model->getAgents()=="0"){ echo "checked"; } ?>>
+                                    <label class="label admin__field-label col-3" for="agent_no">
+                                        <span><?= /* @escapeNotVerified */ __('No') ?></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="admin__field field col-3 main_col _required">
+                        <div class="location_params">
+                            <label class="label admin__field-label">
+                                <strong><u><?= /* @escapeNotVerified */ __('Vehicles') ?></u></strong>
+                            </label>
+                            <div class="admin__field-control control method_wraper">
+                                <div class="each_method">
+                                    <label class="label admin__field-label col-3" >
+                                        <span><?= /* @escapeNotVerified */ __('Enabled') ?></span>
+                                    </label>
+                                </div>
+                                <div class="each_method">
+                                    <input type="radio" class="required-entry required-entry _required" name="vehicles" id="vehicles_yes" value="1" <?php if($model->getVehicles()=="1"){ echo "checked"; } ?>>
+                                    <label class="label admin__field-label col-3" for="vehicles_yes">
+                                        <span><?= /* @escapeNotVerified */ __('Yes') ?></span>
+                                    </label>
+                                </div>
+                                <div class="each_method">
+                                    <input type="radio" class="required-entry required-entry _required"  name="vehicles" id="vehicles_no" value="0" <?php if($model->getVehicles()=="0"){ echo "checked"; } ?>>
+                                    <label class="label admin__field-label col-3" for="vehicles_no">
+                                        <span><?= /* @escapeNotVerified */ __('No') ?></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <?= $this->getChildHtml("fulfillment_status"); ?>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    require([
+        'jquery',
+        'Magento_Ui/js/modal/confirm'
+    ], function ($, confirmation) {
+        $('#save_item').click(function(){
+            $("form#fulfillment_policy_form").submit();
+        });
+        $('#price_policy_delete').on('click', function (e){
+            e.preventDefault();
+            confirmation({
+                title: 'Delete',
+                content: 'Do you want to delete this record?',
+                actions: {
+                    confirm: function () {
+                        setLocation('<?= /* @escapeNotVerified */ $this->getUrl('beckn/fulfillment/delete', ["id" => $model->getEntityId()]) ?>');
+                    },
+                    cancel: function () {
+                        return false;
+                    }
+                }
+            });
+        });
+    });
+</script>
+<script type="text/x-magento-init">
+    {
+        "#fulfillment_policy_form": {
+            "validation": {}
+        }
+    }
+</script>
+<style type="text/css">
+    .price_policy_container .main_col {width: 50%;margin: 15px auto;}
+    .each_policy .col-6 {width: 50%;padding: 10px;}
+    .each_method {width: 20%;margin-top: 10px;}
+    .method_wraper {display: flex;}
+    .each_policy {display: flex;position: relative;}
+    .each_policy .col-6:first-child {padding-left: 0px;}
+    .each_policy .col-6:last-child {padding-right: 0px;}
+    .remove_each_policy {position: absolute;right: -75px;top: 28px;}
+    .fulfillment_area {width: 100%;max-width: 685px;}
+    select.select_location {width: 50%;height: 35px;margin-left: 137px;}
+</style>

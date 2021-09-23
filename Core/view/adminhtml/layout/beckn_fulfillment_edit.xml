@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!--
+/**
+* @author Indglobal
+*/
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="admin-1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <link src="Magento_Customer::js/bootstrap/customer-post-action.js"/>
+    </head>
+    <body>
+        <referenceContainer name="content">
+            <block class="Beckn\Core\Block\Adminhtml\Fulfillment\Policy" name="add_fulfillment_policy" template="Beckn_Core::fulfillment/form.phtml">
+                <container name="fulfillment.status.block" as="fulfillment_status"/>
+            </block>
+        </referenceContainer>
+        <referenceContainer name="fulfillment.status.block">
+            <block class="Beckn\Core\Block\Adminhtml\Fulfillment\Policy" name="fulfillment_status_body" template="Beckn_Core::fulfillment/fulfillment_status.phtml" cacheable="false"/>
+        </referenceContainer>
+    </body>
+</page>

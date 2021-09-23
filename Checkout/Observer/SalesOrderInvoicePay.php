@@ -8,7 +8,7 @@ use Beckn\Checkout\Model\Config\FilterOption\PaymentStatus;
 
 /**
  * Class SalesOrderInvoicePay
- * @author Indoglobal
+ * @author Indglobal
  * @package Beckn\Checkout\Observer
  */
 class SalesOrderInvoicePay implements ObserverInterface

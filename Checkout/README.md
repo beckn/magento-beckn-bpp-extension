@@ -1,6 +1,6 @@
 ## Beckn Checkout Magento 2 Extension
 Beckn Checkout extension helps to connect over Beckn network.
-This extension is depends on Beckn_Bpp extension before install this extension please in Beckn_Bpp first.
+This extension is depends on Beckn_Core extension before install this extension please install Beckn_Core first.
 
 #### 1 - Installation
  * Download the extension
@@ -17,4 +17,4 @@ This extension is depends on Beckn_Bpp extension before install this extension p
     * php bin/magento cache:flush
     
  #### 3 - Configure the extension by going 
-    * Stores >> Configuration >> Beckn 
+    * Stores >> Configuration >> Beckn Protocol Configuration 

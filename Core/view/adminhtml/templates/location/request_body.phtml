@@ -1,0 +1,149 @@
+<?php
+/**
+ * @var \Beckn\Core\Block\Adminhtml\Location\Policy $block
+ */
+?>
+<?php $model = $block->getLocationPolicy(); ?>
+<?php $requestBody = $model->getRequestBody(); ?>
+<div class="admin__field field col-3 main_col">
+    <label class="label admin__field-label" for="request_body">
+        <span><?= /* @escapeNotVerified */ __('Request Body') ?></span>
+    </label>
+    <div class="policy_body">
+        <?php if(!empty($requestBody) && $requestBody->getSize()): ?>
+            <?php foreach ($requestBody->getData() as $key => $item): ?>
+                <div class="each_policy row">
+                    <div class="col-6">
+                        <label class="label admin__field-label">
+                            <span><?= /* @escapeNotVerified */ __('Key') ?></span>
+                        </label>
+                        <div class="admin__field-control control">
+                            <input name="request_body[key][]" title="Key" class="input-text admin__control-text" type="text" aria-required="true" value="<?= $item["key"] ?>">
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <label class="label admin__field-label">
+                            <span><?= /* @escapeNotVerified */ __('Type') ?></span>
+                        </label>
+                        <div class="admin__field-control control">
+                            <select name="request_body[value_type][]" class="admin__control-select">
+                                <?php foreach($block->getValueType() as $itemType): ?>
+                                    <?php $selected = ($itemType["value"]==$item['value_type']) ? "selected" : ""; ?>
+                                    <option value="<?= $itemType["value"] ?>" <?= $selected ?>><?= $itemType["label"] ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <label class="label admin__field-label">
+                            <span><?= /* @escapeNotVerified */ __('Value') ?></span>
+                        </label>
+                        <div class="admin__field-control control">
+                            <input name="request_body[value][]" title="Values" class="input-text admin__control-text" type="text" aria-required="true" value="<?= $item["value"] ?>">
+                        </div>
+                    </div>
+                    <?php if($key!=0): ?>
+                        <div class="primary remove_each_policy">
+                            <button type="button" class="remove_body">
+                            <span><?= __('Delete') ?><span>
+                            </button>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <div class="each_policy row">
+                <div class="col-6">
+                    <label class="label admin__field-label">
+                        <span><?= /* @escapeNotVerified */ __('Key') ?></span>
+                    </label>
+                    <div class="admin__field-control control">
+                        <input name="request_body[key][]" title="Key" class="input-text admin__control-text" type="text" aria-required="true" value="">
+                    </div>
+                </div>
+                <div class="col-6">
+                    <label class="label admin__field-label">
+                        <span><?= /* @escapeNotVerified */ __('Type') ?></span>
+                    </label>
+                    <div class="admin__field-control control">
+                        <select name="request_body[value_type][]" class="admin__control-select">
+                            <option value=""><?= __('Please Select') ?></option>
+                            <?php foreach($block->getValueType() as $itemType): ?>
+                                <option value="<?= $itemType["value"] ?>"><?= $itemType["label"] ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <label class="label admin__field-label">
+                        <span><?= /* @escapeNotVerified */ __('Value') ?></span>
+                    </label>
+                    <div class="admin__field-control control">
+                        <input name="request_body[value][]" title="Values" class="input-text admin__control-text" type="text" aria-required="true" value="">
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
+    </div>
+    <div class="actions-toolbar admin__field field">
+        <div class="primary">
+            <button type="button" id="add_more" class="action" title="<?php echo __('Add More') ?>">
+                <span><?php echo __('Add More') ?></span>
+            </button>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    require([
+        'jquery',
+        'Magento_Ui/js/modal/modal',
+        'mage/url',
+        'mage/translate',
+        'mage/calendar'
+    ], function ($, modal, url, $t) {
+        $('#add_more').click(function () {
+            var html = '<div class="each_policy row">' +
+                '<div class="col-6">' +
+                '<label class="label admin__field-label">' +
+                '<span>Key</span>' +
+                '</label>' +
+                '<div class="admin__field-control control">' +
+                '<input name="request_body[key][]" title="Key" class="input-text admin__control-text" type="text" aria-required="true" value="">' +
+                '</div>' +
+                '</div>' +
+                '<div class="col-6">'+
+                '<label class="label admin__field-label">'+
+                '<span><?= __("Type") ?></span>'+
+                '</label>'+
+                '<div class="admin__field-control control">'+
+                '<select name="request_body[value_type][]" class="admin__control-select">'+
+                '<option value=""><?= __("Please Select") ?></option>'+
+                '<?php foreach($block->getValueType() as $itemType): ?>'+
+                '<option value="<?= $itemType["value"] ?>"><?= $itemType["label"] ?></option>'+
+                '<?php endforeach; ?>'+
+                '</select>'+
+                '</div>'+
+                '</div>' +
+                '<div class="col-6">' +
+                '<label class="label admin__field-label">' +
+                '<span>Value</span>' +
+                '</label>' +
+                '<div class="admin__field-control control">' +
+                '<input name="request_body[value][]" title="Values" class="input-text admin__control-text" type="text" aria-required="true" value="">' +
+                '</div>' +
+                '</div>' +
+                '<div class="primary remove_each_policy">'+
+                '<button type="button" class="remove_body">'+
+                '<span>Delete<span>'+
+                '</button>'+
+                '</div>'+
+                '</div>';
+            $('.policy_body').append(html);
+        });
+        jQuery(document).on('click', '.remove_each_policy', function (e) {
+            e.preventDefault();
+            jQuery(this).closest('.each_policy').remove();
+            return false;
+        });
+    });
+</script>

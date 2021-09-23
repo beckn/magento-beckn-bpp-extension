@@ -1,4 +1,5 @@
 <?php
+
 namespace Beckn\Checkout\Model\ResourceModel\RazorpayPaymentLink\Grid;
 
 use Magento\Framework\Api\Search\SearchResultInterface;
@@ -7,7 +8,8 @@ use Beckn\Checkout\Model\ResourceModel\RazorpayPaymentLink\Collection as Razorpa
 
 /**
  * Class Collection
- * Collection for displaying grid of tasks
+ * @author Indglobal
+ * @package Beckn\Checkout\Model\ResourceModel\RazorpayPaymentLink\Grid
  */
 class Collection extends RazorpayLogCollection implements SearchResultInterface
 {

@@ -2,13 +2,12 @@
 
 namespace Beckn\Checkout\Model;
 
-use Beckn\Bpp\Helper\Data as Helper;
-use Beckn\Bpp\Model\ManageCart;
+use Beckn\Core\Helper\Data as Helper;
+use Beckn\Core\Model\ManageCart;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Model\Order;
 use Beckn\Checkout\Model\Config\FilterOption\PaymentStatus;
-use Beckn\Checkout\Block\Sales\Order\Totals;
 
 /**
  * Class ManageOrder
@@ -38,11 +37,6 @@ class ManageOrder
     protected $_manageCheckout;
 
     /**
-     * @var Totals
-     */
-    protected $_orderTotal;
-
-    /**
      * @var \Magento\Sales\Api\OrderManagementInterface
      */
     protected $_orderManagement;
@@ -53,14 +47,13 @@ class ManageOrder
      * @param ManageCart $manageCart
      * @param OrderInterface $order
      * @param ManageCheckout $manageCheckout
-     * @param Totals $orderTotal
+     * @param \Magento\Sales\Api\OrderManagementInterface $orderManagement
      */
     public function __construct(
         Helper $helper,
-        \Beckn\Bpp\Model\ManageCart $manageCart,
+        \Beckn\Core\Model\ManageCart $manageCart,
         OrderInterface $order,
         ManageCheckout $manageCheckout,
-        Totals $orderTotal,
         \Magento\Sales\Api\OrderManagementInterface $orderManagement
     )
     {
@@ -68,7 +61,6 @@ class ManageOrder
         $this->_manageCart = $manageCart;
         $this->_order = $order;
         $this->_manageCheckout = $manageCheckout;
-        $this->_orderTotal = $orderTotal;
         $this->_orderManagement = $orderManagement;
     }
 
@@ -99,8 +91,9 @@ class ManageOrder
     public function prepareOrderResponse(Order $order)
     {
         $finalItems = $this->getAllItems($order);
-        $providerDetails = $this->_helper->getProvidersDetails();
-        $providerLocation = $this->_helper->getProvidersLocation();
+        $availableStoreId = $this->_manageCart->getOrderProductStoreId($order);
+        $providerDetails = $this->_helper->getProvidersDetails([], $availableStoreId);
+        $providerLocation = $this->_helper->getProvidersLocation($providerDetails);
         $billingAddressData = $order->getBillingAddress();
         $shippingAddressData = $order->getShippingAddress();
         $shippingAddress = $billingAddress = [];
@@ -127,9 +120,9 @@ class ManageOrder
             ],
             "items" => $finalItems,
             "billing" => $billingAddress,
-            "fulfillment" => $this->_manageCheckout->getFulfillmentAddress($fulfillmentAddress),
-            "quote" => $this->getTotalSegment($order),
-            "payment" => $this->_manageCheckout->getPaymentData($status)
+            "fulfillment" => $this->_manageCheckout->getFulfillmentAddress($fulfillmentAddress, $providerDetails),
+            "quote" => $this->_manageCart->getOrderTotalSegment($order),
+            "payment" => $this->_manageCheckout->getPaymentData($status, $order->getGrandTotal())
         ];
     }
 
@@ -164,55 +157,5 @@ class ManageOrder
         } catch (NoSuchEntityException $ex) {
             throw new NoSuchEntityException(__($ex->getMessage()));
         }
-    }
-
-    /**
-     * @param Order $order
-     * @return array
-     */
-    public function getTotalSegment(Order $order)
-    {
-        $totalsBreakup = [];
-        $priceBreakUp = [];
-        $allVisibleItems = $order->getAllVisibleItems();
-        /**
-         * @var \Magento\Sales\Model\Order\Item $eachItem
-         */
-        foreach ($allVisibleItems as $eachItem) {
-            $totalsBreakup[] = [
-                "type" => "item",
-                "title" => $eachItem->getName(),
-                "ref_id" => $eachItem->getSku(),
-                "price" => [
-                    "currency" => $order->getOrderCurrencyCode(),
-                    "value" => $eachItem->getRowTotal(),
-                ]
-            ];
-        }
-        $totalsBlock = $this->_orderTotal->setOrder($order);
-        $totalsBlock->_initTotals();
-        foreach ($totalsBlock->getTotals() as $total) {
-            if (!in_array($total->getCode(), Helper::EXCLUDE_TOTALS)) {
-                $title = $total->getLabel();
-                if ($total->getCode() == "shipping") {
-                    $title = __(Helper::SHIPPING_LABEL);
-                }
-                $totalsBreakup[] = [
-                    "type" => $total->getCode(),
-                    "title" => $title,
-                    "ref_id" => "",
-                    "price" => [
-                        "currency" => $order->getOrderCurrencyCode(),
-                        "value" => $total->getValue(),
-                    ]
-                ];
-            }
-        }
-        $priceBreakUp["price"] = [
-            "currency" => $order->getOrderCurrencyCode(),
-            "value" => $order->getGrandTotal()
-        ];
-        $priceBreakUp["breakup"] = $totalsBreakup;
-        return $priceBreakUp;
     }
 }

@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!--
+/**
+* @author Indglobal
+*/
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="admin-1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <link src="Magento_Customer::js/bootstrap/customer-post-action.js"/>
+    </head>
+    <body>
+        <referenceContainer name="content">
+            <block class="Beckn\Core\Block\Adminhtml\Price\Policy" name="add_price_policy"
+                   template="Beckn_Core::price/form.phtml">
+                <container name="request.body.block" as="request_body_block"/>
+                <container name="request.header.block" as="request_header_block"/>
+            </block>
+        </referenceContainer>
+        <referenceContainer name="request.body.block">
+            <block class="Beckn\Core\Block\Adminhtml\Price\Policy" name="request_body"
+                   template="Beckn_Core::price/request_body.phtml" cacheable="false"/>
+        </referenceContainer>
+        <referenceContainer name="request.header.block">
+            <block class="Beckn\Core\Block\Adminhtml\Price\Policy" name="request_header"
+                   template="Beckn_Core::price/request_header.phtml" cacheable="false"/>
+        </referenceContainer>
+    </body>
+</page>
