@@ -1,20 +1,20 @@
 <?php
 
-namespace Beckn\Checkout\Api;
+namespace Beckn\Support\Api;
 
 use Magento\Framework\Exception\NoSuchEntityException;
 
 /**
- * Interface OrderRepositoryInterface
+ * Interface SupportRepositoryInterface
  * @author Indglobal
- * @package Beckn\Core\Api
+ * @package Beckn\Support\Api
  */
-interface OrderRepositoryInterface
+interface SupportRepositoryInterface
 {
     /**
      * @param mixed $context
      * @param mixed $message
      * @return string
      */
-    public function manageOrder($context, $message);
+    public function manageSupport($context, $message);
 }

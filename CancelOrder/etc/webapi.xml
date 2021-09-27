@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+* @author Indglobal
+*/
+-->
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
+    <route url="/V1/beckn/get_cancellation_reasons" method="POST">
+        <service class="Beckn\CancelOrder\Api\CancelRepositoryInterface" method="cancelReason"/>
+        <resources>
+            <resource ref="anonymous" />
+        </resources>
+    </route>
+    <route url="/V1/beckn/cancel" method="POST">
+        <service class="Beckn\CancelOrder\Api\CancelRepositoryInterface" method="cancelOrder"/>
+        <resources>
+            <resource ref="anonymous" />
+        </resources>
+    </route>
+</routes>

@@ -23,19 +23,5 @@
                 </field>
             </group>
         </section>
-        <section id="cancel_config" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
-            <class>separator-top</class>
-            <label>Payment Configuration</label>
-            <tab>becknbpp</tab>
-            <resource>Beckn_Core::backen_bpp_config</resource>
-            <group id="order_cancel" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
-                <label>Cancel Reason</label>
-                <field id="reason" translate="label" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Add Reason</label>
-                    <frontend_model>Beckn\Checkout\Block\Adminhtml\CancelReason\Options</frontend_model>
-                    <backend_model>Beckn\Checkout\Model\Config\CancelReason\Options</backend_model>
-                </field>
-            </group>
-        </section>
     </system>
 </config>

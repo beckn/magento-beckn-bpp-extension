@@ -8,7 +8,6 @@
     <preference for="Beckn\Checkout\Api\CheckoutRepositoryInterface" type="Beckn\Checkout\Model\Repository\Checkout\CheckoutRepository" />
     <preference for="Beckn\Checkout\Api\CheckoutAddressRepositoryInterface" type="Beckn\Checkout\Model\Repository\Checkout\CheckoutAddressRepository" />
     <preference for="Beckn\Checkout\Api\OrderRepositoryInterface" type="Beckn\Checkout\Model\Repository\Order\OrderRepository" />
-    <preference for="Beckn\Checkout\Api\CancelRepositoryInterface" type="Beckn\Checkout\Model\Repository\Order\CancelRepository" />
     <preference for="Beckn\Checkout\Api\TrackRepositoryInterface" type="Beckn\Checkout\Model\Repository\Track\TrackRepository" />
     <virtualType name="Magento\Sales\Model\ResourceModel\Order\Grid" type="Magento\Sales\Model\ResourceModel\Grid">
         <arguments>

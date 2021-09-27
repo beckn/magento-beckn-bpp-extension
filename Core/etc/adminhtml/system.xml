@@ -185,18 +185,6 @@
                     <upload_dir config="system" scope_info="1">beckn/provider/logo</upload_dir>
                 </field>
             </group>
-            <group id="support_info" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Support Information</label>
-                <field id="phone" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Phone Number</label>
-                </field>
-                <field id="email" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Email Address</label>
-                </field>
-                <field id="url" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>URL</label>
-                </field>
-            </group>
         </section>
     </system>
 </config>

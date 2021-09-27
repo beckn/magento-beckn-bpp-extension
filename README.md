@@ -25,13 +25,14 @@ This extension is managing user cart. Added item into cart, updating cart, delet
 
 ### 4. Beckn_Checkout
 This extension contains following API 
+
 * /init
 * /confirm
 * /status
 * /support
 * /get_cancellation_reasons
 * /cancel
-* /track
+
 This extension is managing all the order related stuff with order status and order support.
 
 ### 5. Beckn_Razorpay

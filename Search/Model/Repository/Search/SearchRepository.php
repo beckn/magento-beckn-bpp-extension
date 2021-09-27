@@ -7,10 +7,13 @@ use Magento\Catalog\Model\CategoryFactory;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Attribute\Source\Status;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
+use Magento\Framework\Api\DataObjectHelper;
 use Magento\Framework\Exception\AuthorizationException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Psr\Log\LoggerInterface;
 use Magento\Framework\Webapi\Exception;
+use Magento\Framework\Search\Search as MagentoCoreSearch;
+use Magento\Framework\Api\Search\SearchCriteriaInterfaceFactory as SearchCriteriaInterfaceFactory;
 
 /**
  * Class SearchRepository
@@ -39,6 +42,18 @@ class SearchRepository implements \Beckn\Search\Api\SearchRepositoryInterface
      * @var CategoryFactory
      */
     protected $_categoryFactory;
+    /**
+     * @var MagentoCoreSearch
+     */
+    protected $_magentoCoreSearch;
+    /**
+     * @var SearchCriteriaInterfaceFactory
+     */
+    protected $_searchCriteriaInterfaceFactory;
+    /**
+     * @var DataObjectHelper
+     */
+    protected $_dataObjectHelper;
 
     /**
      * SearchRepository constructor.
@@ -46,18 +61,27 @@ class SearchRepository implements \Beckn\Search\Api\SearchRepositoryInterface
      * @param LoggerInterface $logger
      * @param CollectionFactory $productCollectionFactory
      * @param CategoryFactory $categoryFactory
+     * @param MagentoCoreSearch $magentoCoreSearch
+     * @param SearchCriteriaInterfaceFactory $searchCriteriaInterfaceFactory
+     * @param DataObjectHelper $dataObjectHelper
      */
     public function __construct(
         Helper $helper,
         LoggerInterface $logger,
         CollectionFactory $productCollectionFactory,
-        CategoryFactory $categoryFactory
+        CategoryFactory $categoryFactory,
+        MagentoCoreSearch $magentoCoreSearch,
+        SearchCriteriaInterfaceFactory $searchCriteriaInterfaceFactory,
+        DataObjectHelper $dataObjectHelper
     )
     {
         $this->_helper = $helper;
         $this->_logger = $logger;
         $this->_productCollectionFactory = $productCollectionFactory;
         $this->_categoryFactory = $categoryFactory;
+        $this->_magentoCoreSearch = $magentoCoreSearch;
+        $this->_searchCriteriaInterfaceFactory = $searchCriteriaInterfaceFactory;
+        $this->_dataObjectHelper = $dataObjectHelper;
     }
 
     /**
@@ -118,12 +142,22 @@ class SearchRepository implements \Beckn\Search\Api\SearchRepositoryInterface
          * @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection
          */
         $filterStoreId = $this->_helper->getAllStoreIds($message);
-        if(!empty($filterStoreId)){
+        if (!empty($filterStoreId)) {
             $collection = $this->_productCollectionFactory->create();
             $collection->addAttributeToSelect('*');
             $collection->addAttributeToFilter('product_store_bpp', ["in", $filterStoreId]);
             $collection->addAttributeToFilter('type_id', "simple");
             $collection->addAttributeToFilter('status', Status::STATUS_ENABLED);
+            if (isset($message["intent"]["item"]["descriptor"]["name"]) && !empty($message["intent"]["item"]["descriptor"]["name"])) {
+                $searchQuery = $message["intent"]["item"]["descriptor"]["name"];
+                $productIds = $this->getDefaultMagentoSearch($searchQuery);
+                $collection->addAttributeToFilter('entity_id', ["IN", $productIds]);
+            }
+            if (isset($message["intent"]["query_string"]) && !empty($message["intent"]["query_string"])) {
+                $searchQuery = $message["intent"]["query_string"];
+                $productIds = $this->getDefaultMagentoSearch($searchQuery);
+                $collection->addAttributeToFilter('entity_id', ["IN", $productIds]);
+            }
             $collection = $this->_helper->addCondition($message, $collection);
         }
 
@@ -152,6 +186,40 @@ class SearchRepository implements \Beckn\Search\Api\SearchRepositoryInterface
         } else {
             $this->_logger->info("No match found hence not firing on_search.");
         }
+    }
+
+    /**
+     * @param $searchQuery
+     * @return array
+     */
+    protected function getDefaultMagentoSearch($searchQuery)
+    {
+        $searchRequest = [
+            "requestName" => "quick_search_container",
+            "filter_groups" => [
+                [
+                    "filters" => [
+                        [
+                            "field" => "search_term",
+                            "value" => $searchQuery
+                        ]
+                    ]
+                ]
+            ]
+        ];
+        $object = $this->_searchCriteriaInterfaceFactory->create();
+        $interface = \Magento\Framework\Api\Search\SearchCriteriaInterface::class;
+        $this->_dataObjectHelper->populateWithArray(
+            $object, $searchRequest, $interface
+        );
+        $searchCollection = $this->_magentoCoreSearch->search($object);
+        $productIds = [];
+        if ($searchCollection->getTotalCount()) {
+            foreach ($searchCollection->getItems() as $_search) {
+                $productIds[] = $_search->getId();
+            }
+        }
+        return $productIds;
     }
 
     /**
@@ -192,17 +260,17 @@ class SearchRepository implements \Beckn\Search\Api\SearchRepositoryInterface
                 ]
             ];
         }
-        if($product->getPricePolicyBpp()!=""){
+        if ($product->getPricePolicyBpp() != "") {
             $price = $this->_helper->getPriceFromPolicy($product->getPricePolicyBpp());
-            if($price!=""){
+            if ($price != "") {
                 $productData["price"]["value"] = $price;
             }
         }
         $productStoreId = $product->getProductStoreBpp();
         $productData["location_id"] = $productStoreId;
-        if($productStoreId!=""){
+        if ($productStoreId != "") {
             $locationId = $this->_helper->getProductLocationId($productStoreId);
-            if($locationId!=""){
+            if ($locationId != "") {
                 $productData["location_id"] = $locationId;
             }
         }

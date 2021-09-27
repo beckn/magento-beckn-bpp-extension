@@ -1,6 +1,6 @@
 <?php
 
-namespace Beckn\Checkout\Model\Config\CancelReason;
+namespace Beckn\CancelOrder\Model\Config\CancelReason;
 
 use Magento\Framework\App\Cache\TypeListInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;

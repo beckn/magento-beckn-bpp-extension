@@ -1,6 +1,6 @@
 <?php
 
-namespace Beckn\Checkout\Api;
+namespace Beckn\CancelOrder\Api;
 
 use Magento\Framework\Exception\NoSuchEntityException;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Beckn\Checkout\Block\Adminhtml\CancelReason;
+namespace Beckn\CancelOrder\Block\Adminhtml\CancelReason;
 
 use Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray;
 

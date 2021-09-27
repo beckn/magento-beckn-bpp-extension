@@ -23,24 +23,6 @@
             <resource ref="anonymous" />
         </resources>
     </route>
-    <route url="/V1/beckn/support" method="POST">
-        <service class="Beckn\Checkout\Api\OrderRepositoryInterface" method="manageSupport"/>
-        <resources>
-            <resource ref="anonymous" />
-        </resources>
-    </route>
-    <route url="/V1/beckn/get_cancellation_reasons" method="POST">
-        <service class="Beckn\Checkout\Api\CancelRepositoryInterface" method="cancelReason"/>
-        <resources>
-            <resource ref="anonymous" />
-        </resources>
-    </route>
-    <route url="/V1/beckn/cancel" method="POST">
-        <service class="Beckn\Checkout\Api\CancelRepositoryInterface" method="cancelOrder"/>
-        <resources>
-            <resource ref="anonymous" />
-        </resources>
-    </route>
     <route url="/V1/beckn/track" method="POST">
         <service class="Beckn\Checkout\Api\TrackRepositoryInterface" method="trackOrder"/>
         <resources>

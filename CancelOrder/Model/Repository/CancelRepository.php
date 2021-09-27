@@ -1,22 +1,18 @@
 <?php
 
-namespace Beckn\Checkout\Model\Repository\Order;
+namespace Beckn\CancelOrder\Model\Repository;
 
 use Beckn\Core\Helper\Data as Helper;
 use Beckn\Checkout\Model\ManageOrder;
-use Magento\Framework\Exception\CouldNotSaveException;
-use Magento\Framework\Exception\InputException;
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Quote\Api\CartRepositoryInterface;
 use Psr\Log\LoggerInterface;
 
 /**
  * Class CancelRepository
  * @author Indglobal
- * @package Beckn\Checkout\Model\Repository\Order
+ * @package Beckn\CancelOrder\Model\Repository
  */
-class CancelRepository implements \Beckn\Checkout\Api\CancelRepositoryInterface
+class CancelRepository implements \Beckn\CancelOrder\Api\CancelRepositoryInterface
 {
     /**
      * @var Helper
@@ -85,7 +81,7 @@ class CancelRepository implements \Beckn\Checkout\Api\CancelRepositoryInterface
     public function cancelOrder($context, $message)
     {
         $authStatus = $this->_helper->validateAuth($context, $message);
-        if(!$authStatus){
+        if (!$authStatus) {
             echo $this->_helper->unauthorizedResponse();
             exit();
         }
@@ -160,5 +156,4 @@ class CancelRepository implements \Beckn\Checkout\Api\CancelRepositoryInterface
         }
         return $this->_helper->sendResponse($apiUrl, $onCancelResponse);
     }
-
 }

@@ -433,48 +433,10 @@ class Data extends AbstractHelper
         if (!$match) {
             return null;
         }
-//        if (isset($message["intent"]["fulfillment"]["end"]["location"]["gps"]) && !empty($message["intent"]["fulfillment"]["end"]["location"]["gps"])) {
-//            $match = false;
-//            $gps_cordinate = $message["intent"]["fulfillment"]["end"]["location"]["gps"];
-//            if (!empty($gps_cordinate)) {
-//                $gpsLatLong = explode(',', $gps_cordinate);
-//                $latTo = $gpsLatLong[0];
-//                $longTo = $gpsLatLong[1];
-//                $totalDistance = $this->checkDistance($latTo, $longTo);
-//                $areaRadius = $this->getConfigData('provider_config/provider_address/radius');
-//                if ($totalDistance <= $areaRadius) {
-//                    $match = true;
-//                }
-//            }
-//        }
-//        if (!$match) {
-//            return null;
-//        }
         if (isset($message["intent"]["item"]["descriptor"]["code"]) && !empty($message["intent"]["item"]["descriptor"]["code"])) {
             $itemCode = $message["intent"]["item"]["descriptor"]["code"];
             return $collection->addAttributeToFilter('item_code_bpp', $itemCode);
         }
-
-        if (isset($message["intent"]["item"]["descriptor"]["name"]) && !empty($message["intent"]["item"]["descriptor"]["name"])) {
-            $name = $message["intent"]["item"]["descriptor"]["name"];
-            $collection->addAttributeToFilter('name', ['like' => "%" . $name . "%"]);
-        }
-        if (isset($message["intent"]["query_string"]) && !empty($message["intent"]["query_string"])) {
-            $name = $message["intent"]["query_string"];
-            $collection->addAttributeToFilter('name', ['like' => "%" . $name . "%"]);
-        }
-
-//        if (isset($message["intent"]["item"]["price"]["minimum_value"])) {
-//            $minValue = $message["intent"]["item"]["price"]["minimum_value"];
-//            $maxValue = $message["intent"]["item"]["price"]["maximum_value"];
-//            $collection->addAttributeToFilter(
-//                'price',
-//                [
-//                    'from' => $minValue,
-//                    'to' => $maxValue
-//                ]
-//            );
-//        }
         if (isset($message["intent"]["item"]["time"]["range"]) && !empty($message["intent"]["item"]["time"]["range"])) {
             $range = $message["intent"]["item"]["time"]["range"];
             $starRangeDate = $range['start'] ?? "";
