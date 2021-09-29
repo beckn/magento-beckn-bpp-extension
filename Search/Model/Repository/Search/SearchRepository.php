@@ -82,6 +82,7 @@ class SearchRepository implements \Beckn\Search\Api\SearchRepositoryInterface
         $this->_magentoCoreSearch = $magentoCoreSearch;
         $this->_searchCriteriaInterfaceFactory = $searchCriteriaInterfaceFactory;
         $this->_dataObjectHelper = $dataObjectHelper;
+        $this->_dataObjectHelper = $dataObjectHelper;
     }
 
     /**

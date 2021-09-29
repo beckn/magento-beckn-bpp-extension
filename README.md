@@ -29,13 +29,25 @@ This extension contains following API
 * /init
 * /confirm
 * /status
-* /support
+
+This extension is managing all the order related stuff with order place and order status.
+
+### 5. Beckn_CancelOrder
+This extension contains following API
+
 * /get_cancellation_reasons
 * /cancel
 
-This extension is managing all the order related stuff with order status and order support.
+This extension is managing all the order cancel stuff.
 
-### 5. Beckn_Razorpay
+### 6. Beckn_Support
+This extension contains following API
+
+* /support
+
+This extension is managing all the support related API.
+
+### 7. Beckn_Razorpay
 This extension is a basically a patch for Razorpay_Magento to work both website and Beckn network.
 This extension doesn't contain any API.
 
