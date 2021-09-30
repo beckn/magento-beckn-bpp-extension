@@ -260,7 +260,7 @@ class ManageCheckout
                 ],
                 "items" => $finalItems,
                 "billing" => $message["order"]["billing"],
-                "fulfillment" => $this->getFulfillmentAddress($message["order"]["fulfillment"]),
+                "fulfillment" => $this->getFulfillmentAddress($message["order"]["fulfillment"], $providerDetails),
                 "quote" => $totalSegment,
                 "payment" => $this->getPaymentData($status, $quote->getGrandTotal(), $paymentParams),
             ];
@@ -294,7 +294,7 @@ class ManageCheckout
                 ],
                 "items" => $finalItems,
                 "billing" => $message["order"]["billing"] ?? $message["initialized"]["billing"],
-                "fulfillment" => $this->getFulfillmentAddress($message["order"]["fulfillment"] ?? $message["initialized"]["fulfillment"]),
+                "fulfillment" => $this->getFulfillmentAddress($message["order"]["fulfillment"] ?? $message["initialized"]["fulfillment"], $providerDetails),
                 "quote" => $totalSegment,
                 "payment" => $this->getPaymentData($status, $order->getGrandTotal()),
                 "created_at" => date('Y-m-d\TH:i:s\Z', strtotime($order->getCreatedAt())),

@@ -165,12 +165,30 @@ class ManageCart
                     $quoteId = null;
                 }
             } else {
-                if ($quoteMaskId["status"]  == 0) {
+                if ($quoteMaskId["status"]  === 0) {
                     throw new \Exception("Error transaction id is already processed.");
                 }
                 $quoteId = $quoteMaskId['quote_id'];
             }
             return $quoteId;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         } catch (CouldNotSaveException $ex) {
             throw new CouldNotSaveException(
                 __('Could not Beckn quote mask: %1', $ex->getMessage()),
