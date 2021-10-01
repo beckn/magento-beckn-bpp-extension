@@ -17,12 +17,14 @@ Also, this extension contains almost main functions and receiving the data and s
 ### 2. Beckn_Search
 This extension contains following API 
 * /search
+
 All the search logic and sending search data to Bap_Uri is added to this extension.
 Also, this extension is depends on Beckn_Core extension because it use the main function from this module.
 
 ### 3. Beckn_Select
 This extension contains following API 
 * /select
+
 This extension is managing user cart. Added item into cart, updating cart, deleting items from cart.
 
 ### 4. Beckn_Checkout
