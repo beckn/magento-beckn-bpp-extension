@@ -6,7 +6,9 @@ Beckn Magento 2 Extension. I contain 5 module to connect over Beckn network.
 2. Beckn_Search
 3. Beckn_Select
 4. Beckn_Checkout
-5. Beckn_Razorpay
+5. Beckn_CancelOrder
+6. Beckn_Support
+7. Beckn_Razorpay
 
 ### 1. Beckn_Core
 This extension contains main configuration and all core function.
