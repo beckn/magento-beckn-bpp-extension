@@ -181,7 +181,7 @@ class CheckoutAddressRepository implements \Beckn\Checkout\Api\CheckoutAddressRe
 
             $this->_quoteRepository->save($quote);
             $quote->collectTotals();
-            $onInitResponse["message"]["initialized"] = $this->_manageCheckout->prepareOnInitResponse($quote, $message);
+            $onInitResponse["message"]["order"] = $this->_manageCheckout->prepareOnInitResponse($quote, $message);
             $this->_manageCheckout->saveResponseBody($quote, $onInitResponse);
         } catch (NoSuchEntityException $ex) {
             $onInitResponse["error"] = $this->_helper->acknowledgeError("", $ex->getMessage());

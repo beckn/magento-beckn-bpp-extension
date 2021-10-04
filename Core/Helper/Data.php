@@ -54,7 +54,8 @@ class Data extends AbstractHelper
     const ON_CONFIRM = "on_confirm";
     const ON_STATUS = "on_status";
     const ON_SUPPORT = "on_support";
-    const ON_CANCEL = "on_cancel";
+    //const ON_CANCEL = "on_cancel";
+    const ON_CANCEL = "cancellation_reasons";
     const ON_UPDATE = "on_update";
     const ON_TRACK = "on_track";
     const ON_RATING = "on_rating";

@@ -101,5 +101,24 @@ class UpgradeSchema implements UpgradeSchemaInterface
             }
             $installer->endSetup();
         }
+
+        if (version_compare($context->getVersion(), '1.0.3', '<=')) {
+            $installer = $setup;
+            $installer->startSetup();
+            $connection = $installer->getConnection();
+            if ($connection->tableColumnExists(self::TABLE_BECKN_RAZORPAY, 'transaction_status') === false) {
+                $installer->getConnection()->addColumn(
+                    $installer->getTable(self::TABLE_BECKN_RAZORPAY), 'transaction_status', [
+                        'type' => Table::TYPE_TEXT,
+                        'nullable' => true,
+                        'size' => 255,
+                        'after' => "status",
+                        'default' => null,
+                        'comment' => 'Transaction Status',
+                    ]
+                );
+            }
+            $installer->endSetup();
+        }
     }
 }

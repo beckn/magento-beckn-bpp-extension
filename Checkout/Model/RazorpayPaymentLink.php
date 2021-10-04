@@ -179,6 +179,22 @@ class RazorpayPaymentLink extends \Magento\Framework\Model\AbstractModel impleme
     /**
      * @inheritdoc
      */
+    public function getTransactionStatus()
+    {
+        return parent::getData(self::TRANSACTION_STATUS);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setTransactionStatus($transactionStatus)
+    {
+        return $this->setData(self::TRANSACTION_STATUS, $transactionStatus);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getUpdatedAt()
     {
         return parent::getData(self::UPDATED_AT);

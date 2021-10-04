@@ -42,19 +42,26 @@ class ManageOrder
     protected $_orderManagement;
 
     /**
+     * @var Razorpay
+     */
+    protected $_razorpay;
+
+    /**
      * ManageOrder constructor.
      * @param Helper $helper
      * @param ManageCart $manageCart
      * @param OrderInterface $order
      * @param ManageCheckout $manageCheckout
      * @param \Magento\Sales\Api\OrderManagementInterface $orderManagement
+     * @param Razorpay $razorpay
      */
     public function __construct(
         Helper $helper,
         \Beckn\Core\Model\ManageCart $manageCart,
         OrderInterface $order,
         ManageCheckout $manageCheckout,
-        \Magento\Sales\Api\OrderManagementInterface $orderManagement
+        \Magento\Sales\Api\OrderManagementInterface $orderManagement,
+        Razorpay $razorpay
     )
     {
         $this->_helper = $helper;
@@ -62,6 +69,7 @@ class ManageOrder
         $this->_order = $order;
         $this->_manageCheckout = $manageCheckout;
         $this->_orderManagement = $orderManagement;
+        $this->_razorpay = $razorpay;
     }
 
     /**
@@ -111,6 +119,12 @@ class ManageOrder
         } else {
             $status = PaymentStatus::PAYMENT_NOT_PAID_LABEL;
         }
+        $method = $order->getPayment()->getMethod();
+        $params = [];
+        if($method==Helper::RAZORPAY){
+            $transactionStatus = $this->_razorpay->getRazorpayTransactionStatus($order->getQuoteId());
+            $params["transaction_status"] = $transactionStatus;
+        }
         return [
             "id" => $order->getIncrementId(),
             "state" => $order->getStatusLabel(),
@@ -122,7 +136,7 @@ class ManageOrder
             "billing" => $billingAddress,
             "fulfillment" => $this->_manageCheckout->getFulfillmentAddress($fulfillmentAddress, $providerDetails),
             "quote" => $this->_manageCart->getOrderTotalSegment($order),
-            "payment" => $this->_manageCheckout->getPaymentData($status, $order->getGrandTotal())
+            "payment" => $this->_manageCheckout->getPaymentData($status, $order->getGrandTotal(), $order->getOrderCurrencyCode(), $params)
         ];
     }
 

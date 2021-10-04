@@ -135,8 +135,6 @@ class CartRepository implements \Beckn\Select\Api\CartRepositoryInterface
      */
     private function processCart($context, $message)
     {
-        $this->_logger->info("init response is here");
-        $this->_logger->info(json_encode($message));
         $onSelectResponse = [];
         $onSelectResponse["context"] = $this->_helper->getContext($context);
         $apiUrl = $this->_helper->getBapUri(Helper::ON_SELECT, $context);
@@ -145,7 +143,7 @@ class CartRepository implements \Beckn\Select\Api\CartRepositoryInterface
             $quote = $this->_quoteRepository->getActive($quoteId);
             $this->_cart->setQuote($quote);
             $this->_cart->truncate();
-            foreach ($message["selected"]['items'] as $_item) {
+            foreach ($message["order"]['items'] as $_item) {
                 if ($_item['quantity']["count"] > 0) {
                     $itemSku = $_item["id"];
                     $product = $this->_helper->getProductBySku($itemSku);
@@ -160,8 +158,8 @@ class CartRepository implements \Beckn\Select\Api\CartRepositoryInterface
             $this->_cart->save();
             $quote->collectTotals();
             $prepareOnSelect = $this->_manageCart->prepareOnSelectResponse($quote, $context);
-            $onSelectResponse["message"]["selected"] = $prepareOnSelect["selected_data"];
-            $onSelectResponse["message"]["selected"]["provider_location"] = $prepareOnSelect["provider_location"];
+            $onSelectResponse["message"]["order"] = $prepareOnSelect["selected_data"];
+            $onSelectResponse["message"]["order"]["provider_location"] = $prepareOnSelect["provider_location"];
         } catch (NoSuchEntityException $ex) {
             $onSelectResponse["error"] = $this->_helper->acknowledgeError("", $ex->getMessage());
         } catch (\Exception $ex) {

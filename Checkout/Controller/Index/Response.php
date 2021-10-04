@@ -193,7 +193,7 @@ class Response extends \Magento\Framework\App\Action\Action implements CsrfAware
                             "payment_id" => $params["razorpay_payment_id"],
                             "signature" => $params["razorpay_signature"],
                         ];
-                        $this->_razorpay->updatePaymentLinkStatus($order);
+                        $this->_razorpay->updatePaymentLinkStatus($order, $razorpayOrderResponse["response"]["status"]);
                         $this->_razorpay->updateRazorpaySalesOrder($order, $razorpayData);
                         $this->_manageCheckout->updateTransactionStatus($onConfirmResponse["context"]["transaction_id"] ?? "");
                         $this->_logger->info("Order Placed successfully " . $order->getIncrementId());

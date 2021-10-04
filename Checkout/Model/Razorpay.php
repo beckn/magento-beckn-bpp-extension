@@ -128,6 +128,7 @@ class Razorpay
                         "payment_link" => $responseData["short_url"],
                         "payment_id" => $responseData["id"],
                         "full_response" => $response,
+                        "transaction_status" => $responseData["status"],
                     ];
                     if (!empty($razorpayPayment->getData())) {
                         $razorpayPayment->addData($data)->setEntityId($razorpayPayment->getEntityId())->save();
@@ -279,10 +280,11 @@ class Razorpay
 
     /**
      * @param OrderInterface $order
+     * @param string $transactionStatus
      * @return RazorpayPaymentLink
      * @throws \Exception
      */
-    public function updatePaymentLinkStatus(OrderInterface $order)
+    public function updatePaymentLinkStatus(OrderInterface $order, $transactionStatus)
     {
         /**
          * @var RazorpayPaymentLink $razorpayPayment
@@ -291,8 +293,25 @@ class Razorpay
             ->addFieldToFilter("quote_id", $order->getQuoteId())->getFirstItem();
         if (!empty($razorpayPayment->getData())) {
             $razorpayPayment->setStatus(1);
+            $razorpayPayment->setTransactionStatus($transactionStatus);
             $razorpayPayment->save();
         }
         return $razorpayPayment;
+    }
+
+    /**
+     * @param int $quoteId
+     * @return array|mixed|string|null
+     */
+    public function getRazorpayTransactionStatus($quoteId){
+        /**
+         * @var RazorpayPaymentLink $razorpayPayment
+         */
+        $razorpayPayment = $this->_razorpayPaymentLinkCollection
+            ->addFieldToFilter("quote_id", $quoteId)->getFirstItem();
+        if (!empty($razorpayPayment->getData())) {
+            return $razorpayPayment->getTransactionStatus();
+        }
+        return "";
     }
 }

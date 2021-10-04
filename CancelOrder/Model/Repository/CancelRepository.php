@@ -68,8 +68,57 @@ class CancelRepository implements \Beckn\CancelOrder\Api\CancelRepositoryInterfa
      */
     public function cancelReason($context)
     {
+//        $authStatus = $this->_helper->validateAuth($context, $message);
+//        if(!$authStatus){
+//            echo $this->_helper->unauthorizedResponse();
+//            exit();
+//        }
+//        $validateMessage = $this->_helper->validateApiRequest($context, $message);
+        if (is_callable('fastcgi_finish_request')) {
+            $acknowledge = $this->_helper->getAcknowledge($context);
+//            $validateMessage = $this->_helper->validateOrderStatusRequest($context, $message);
+//            if (!empty($validateMessage['message'])) {
+//                $errorAcknowledge = $this->_helper->acknowledgeError($validateMessage['code'], $validateMessage['message']);
+//                $acknowledge["message"]["ack"]["status"] = Helper::NACK;
+//                $acknowledge["error"] = $errorAcknowledge;
+//            }
+            echo json_encode($acknowledge);
+            session_write_close();
+            fastcgi_finish_request();
+        }
+        ignore_user_abort(true);
+        ob_start();
+
+        //Add code here
+        if (empty($validateMessage['message'])) {
+            $this->manageCancelReason($context);
+        }
+        $serverProtocol = filter_input(INPUT_SERVER, 'SERVER_PROTOCOL', FILTER_SANITIZE_STRING);
+
+        header($serverProtocol . ' 200 OK');
+        // Disable compression (in case content length is compressed).
+        header('Content-Encoding: none');
+        header('Content-Length: ' . ob_get_length());
+        // Close the connection.
+        header('Connection: close');
+        ob_end_flush();
+        ob_flush();
+        flush();
+        //$cancelReason = $this->_helper->getCancelReasonOption();
+        //return json_decode(json_encode($cancelReason), true);
+    }
+
+    /**
+     * @param $context
+     * @return mixed
+     */
+    public function manageCancelReason($context){
+        $onCancelReason = [];
+        $onCancelReason["context"] = $this->_helper->getContext($context);
+        $apiUrl = $this->_helper->getBapUri(Helper::ON_CANCEL, $context);
         $cancelReason = $this->_helper->getCancelReasonOption();
-        return json_decode(json_encode($cancelReason), true);
+        $onCancelReason["message"]["cancellation_reasons"] = $cancelReason;
+        return $this->_helper->sendResponse($apiUrl, $onCancelReason);
     }
 
     /**

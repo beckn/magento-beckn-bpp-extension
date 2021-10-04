@@ -19,6 +19,7 @@ interface RazorpayPaymentLinkInterface
     const PAYMENT_ID = "payment_id";
     const FULL_RESPONSE = "full_response";
     const STATUS = "status";
+    const TRANSACTION_STATUS = "transaction_status";
     const CREATED_AT = "created_at";
     const UPDATED_AT = "updated_at";
 
@@ -72,7 +73,7 @@ interface RazorpayPaymentLinkInterface
     public function getFullResponse();
 
     /**
-     * @param $fullResponse `
+     * @param $fullResponse
      * @return string
      */
     public function setFullResponse($fullResponse);
@@ -83,10 +84,21 @@ interface RazorpayPaymentLinkInterface
     public function getStatus();
 
     /**
-     * @param $status `
+     * @param $status
      * @return string
      */
     public function setStatus($status);
+
+    /**
+     * @return string
+     */
+    public function getTransactionStatus();
+
+    /**
+     * @param $transactionStatus
+     * @return string
+     */
+    public function setTransactionStatus($transactionStatus);
 
     /**
      * @return string

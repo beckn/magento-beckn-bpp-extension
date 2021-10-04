@@ -307,9 +307,9 @@ class ManageCart
              */
             foreach ($allVisibleItems as $eachItem) {
                 $totalsBreakup[] = [
-                    "type" => "item",
+                    //"type" => "item",
                     "title" => $eachItem->getName(),
-                    "ref_id" => $eachItem->getSku(),
+                    //"ref_id" => $eachItem->getSku(),
                     "price" => [
                         "currency" => $quote->getQuoteCurrencyCode(),
                         "value" => $eachItem->getRowTotal(),
@@ -322,13 +322,13 @@ class ManageCart
                         $title = $totalSegment->getTitle();
                         $code = $totalSegment->getCode();
                         if ($totalSegment->getCode() == "shipping") {
-                            $title = $totalSegment->getCode();
-                            $code = __(Helper::SHIPPING_LABEL);
+                            //$title = $totalSegment->getCode();
+                            $title = __(Helper::SHIPPING_LABEL);
                         }
                         $totalsBreakup[] = [
-                            "type" => $code,
+                            //"type" => $code,
                             "title" => $title,
-                            "ref_id" => "",
+                            //"ref_id" => "",
                             "price" => [
                                 "currency" => $quote->getQuoteCurrencyCode(),
                                 "value" => $totalSegment->getValue(),
@@ -389,9 +389,9 @@ class ManageCart
          */
         foreach ($allVisibleItems as $eachItem) {
             $totalsBreakup[] = [
-                "type" => "item",
+                //"type" => "item",
                 "title" => $eachItem->getName(),
-                "ref_id" => $eachItem->getSku(),
+                //"ref_id" => $eachItem->getSku(),
                 "price" => [
                     "currency" => $order->getOrderCurrencyCode(),
                     "value" => $eachItem->getRowTotal(),
@@ -405,13 +405,13 @@ class ManageCart
                 $title = $total->getLabel();
                 $code = $total->getCode();
                 if ($total->getCode() == "shipping") {
-                    $title = $total->getCode();
-                    $code = __(Helper::SHIPPING_LABEL);
+                    //$title = $total->getCode();
+                    $title = __(Helper::SHIPPING_LABEL);
                 }
                 $totalsBreakup[] = [
-                    "type" => $code,
+                    //"type" => $code,
                     "title" => $title,
-                    "ref_id" => "",
+                    //"ref_id" => "",
                     "price" => [
                         "currency" => $order->getOrderCurrencyCode(),
                         "value" => $total->getValue(),

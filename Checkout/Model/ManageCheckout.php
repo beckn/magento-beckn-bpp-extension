@@ -249,8 +249,10 @@ class ManageCheckout
                 if (!$paymentLink) {
                     throw new \Exception(__("Can't able to generate Razorpay payment link"));
                 }
+                $transactionStatus = $this->_razorpay->getRazorpayTransactionStatus($quote->getId());
                 $paymentParams['uri'] = $paymentLink;
                 $paymentParams['method'] = "http/get";
+                $paymentParams["transaction_status"] = $transactionStatus;
             }
 
             return [
@@ -262,7 +264,7 @@ class ManageCheckout
                 "billing" => $message["order"]["billing"],
                 "fulfillment" => $this->getFulfillmentAddress($message["order"]["fulfillment"], $providerDetails),
                 "quote" => $totalSegment,
-                "payment" => $this->getPaymentData($status, $quote->getGrandTotal(), $paymentParams),
+                "payment" => $this->getPaymentData($status, $quote->getGrandTotal(), $quote->getQuoteCurrencyCode(), $paymentParams),
             ];
         } catch (NoSuchEntityException $ex) {
             throw new NoSuchEntityException(__($ex->getMessage()));
@@ -279,12 +281,17 @@ class ManageCheckout
     public function prepareOnConfirmResponse(OrderInterface $order, array $message, string $status)
     {
         try {
-            $finalItems = $message["order"]["items"] ?? $message["initialized"]["items"];
-            //$totalSegment = $message["order"]["quote"] ?? $message["initialized"]["quote"];
+            $finalItems = $message["order"]["items"];
             $totalSegment = $this->_manageCart->getOrderTotalSegment($order);
             $availableStoreId = $this->_manageCart->getOrderProductStoreId($order);
             $providerDetails = $this->_helper->getProvidersDetails([], $availableStoreId);
             $providerLocation = $this->_helper->getProvidersLocation($providerDetails);
+            $method = $order->getPayment()->getMethod();
+            $params = [];
+            if($method==Helper::RAZORPAY){
+                $transactionStatus = $this->_razorpay->getRazorpayTransactionStatus($order->getQuoteId());
+                $params["transaction_status"] = $transactionStatus;
+            }
             return [
                 "id" => $order->getIncrementId(),
                 "state" => $order->getStatusLabel(),
@@ -293,10 +300,10 @@ class ManageCheckout
                     "id" => $providerLocation["id"]
                 ],
                 "items" => $finalItems,
-                "billing" => $message["order"]["billing"] ?? $message["initialized"]["billing"],
-                "fulfillment" => $this->getFulfillmentAddress($message["order"]["fulfillment"] ?? $message["initialized"]["fulfillment"], $providerDetails),
+                "billing" => $message["order"]["billing"],
+                "fulfillment" => $this->getFulfillmentAddress($message["order"]["fulfillment"], $providerDetails),
                 "quote" => $totalSegment,
-                "payment" => $this->getPaymentData($status, $order->getGrandTotal()),
+                "payment" => $this->getPaymentData($status, $order->getGrandTotal(), $order->getOrderCurrencyCode(), $params),
                 "created_at" => date('Y-m-d\TH:i:s\Z', strtotime($order->getCreatedAt())),
                 "updated_at" => date('Y-m-d\TH:i:s\Z', strtotime($order->getUpdatedAt()))
             ];
@@ -308,26 +315,24 @@ class ManageCheckout
     /**
      * @param string $status
      * @param $grandTotal
+     * @param $currency
      * @param array $data
      * @return array
      */
-    public function getPaymentData(string $status, $grandTotal, $data = [])
+    public function getPaymentData(string $status, $grandTotal, $currency, $data = [])
     {
         $paymentType = $this->_helper->getConfigData(Helper::XML_PATH_SELECTED_PAYMENT_TYPE);
         $paymentData = [
-            //"uri" => $data["uri"] ?? "",
-            //"tl_method" => $data["method"] ?? "",
-            //"params" => new \stdClass(),
             "params" => [
-                "amount" => $grandTotal
+                "amount" => $grandTotal,
+                "currency" => $currency,
             ],
-            //"transaction_id" => "",
-            //"amount" => "",
-            //"mode" => "",
-            //"vpa" => ""
             "type" => $paymentType,
             "status" => $status
         ];
+        if(isset($data["transaction_status"])){
+            $paymentData["params"]["transaction_status"] = $data["transaction_status"];
+        }
         if (isset($data["uri"])) {
             $paymentData["uri"] = $data["uri"];
         }

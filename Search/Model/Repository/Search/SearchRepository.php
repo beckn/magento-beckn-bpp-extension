@@ -154,11 +154,6 @@ class SearchRepository implements \Beckn\Search\Api\SearchRepositoryInterface
                 $productIds = $this->getDefaultMagentoSearch($searchQuery);
                 $collection->addAttributeToFilter('entity_id', ["IN", $productIds]);
             }
-            if (isset($message["intent"]["query_string"]) && !empty($message["intent"]["query_string"])) {
-                $searchQuery = $message["intent"]["query_string"];
-                $productIds = $this->getDefaultMagentoSearch($searchQuery);
-                $collection->addAttributeToFilter('entity_id', ["IN", $productIds]);
-            }
             $collection = $this->_helper->addCondition($message, $collection);
         }
 
