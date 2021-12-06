@@ -4,7 +4,10 @@ namespace Beckn\Core\Model;
 
 use Magento\Framework\App\Cache\Frontend\Pool;
 use Magento\Framework\App\Cache\TypeListInterface;
+use Magento\Framework\HTTP\Client\Curl;
 use Magento\Store\Model\ScopeInterface;
+use Beckn\Core\Api\Data\BecknLookupInterface;
+use Beckn\Core\Model\ResourceModel\BecknLookup\CollectionFactory as LookupCollectionFactory;
 
 /**
  * Class DigitalSignature
@@ -18,6 +21,8 @@ class DigitalSignature
     const ENCRYPTION_PUBLIC_KEY_PATH = 'security_config/security/encryption_public_key';
     const ENCRYPTION_PRIVATE_KEY_PATH = 'security_config/security/encryption_private_key';
     const XML_PATH_SUBSCRIBER_ID = "subscriber_config/subscriber/subscriber_id";
+    const XML_PATH_SECURITY_REGISTRY_URL = "security_config/security/url";
+    const REGISTRY_LOOKUP = "/lookup";
 
     /**
      * @var \Magento\Framework\App\Config\ConfigResource\ConfigInterface
@@ -38,20 +43,47 @@ class DigitalSignature
     protected $_scopeConfig;
 
     /**
+     * @var Curl
+     */
+    protected $_curl;
+
+    /**
+     * @var \Beckn\Core\Model\BecknLookupFactory
+     */
+    protected $_becknLookupFactory;
+
+    /**
+     * @var LookupCollectionFactory
+     */
+    protected $_lookupCollectionFactory;
+
+    /**
      * DigitalSignature constructor.
      * @param \Magento\Framework\App\Config\ConfigResource\ConfigInterface $configInterface
+     * @param TypeListInterface $cacheTypeList
+     * @param Pool $cacheFrontendPool
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param Curl $curl
+     * @param \Beckn\Core\Model\BecknLookupFactory $becknLookupFactory
+     * @param LookupCollectionFactory $lookupCollectionFactory
      */
     public function __construct(
         \Magento\Framework\App\Config\ConfigResource\ConfigInterface $configInterface,
         TypeListInterface $cacheTypeList,
         Pool $cacheFrontendPool,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        Curl $curl,
+        \Beckn\Core\Model\BecknLookupFactory $becknLookupFactory,
+        LookupCollectionFactory $lookupCollectionFactory
     )
     {
         $this->_configInterface = $configInterface;
         $this->_cacheTypeList = $cacheTypeList;
         $this->_cacheFrontendPool = $cacheFrontendPool;
         $this->_scopeConfig = $scopeConfig;
+        $this->_curl = $curl;
+        $this->_becknLookupFactory = $becknLookupFactory;
+        $this->_lookupCollectionFactory = $lookupCollectionFactory;
     }
 
     /**
@@ -263,15 +295,34 @@ class DigitalSignature
      */
     public function validateAuth($authData, $body)
     {
-        $publicKey = "h5W9FOm5C3POe7wQShwi+Uw7C8bMO5qiRSNHMgu/2vA=";
+        $keyId = $this->getDataFromAuth($authData, "keyId");
+        $subscriberId = $this->getSubscriberIdFromAuth($keyId);
+        $publicKey = $this->getSigningPublicKeyFromLookup($subscriberId);
         $publicKey = \Sodium_base642bin($publicKey, SODIUM_BASE64_VARIANT_ORIGINAL);
-        $created = $this->getDateFromAuth($authData, "created");
-        $expires = $this->getDateFromAuth($authData, "expires");
+        $created = $this->getDataFromAuth($authData, "created");
+        $expires = $this->getDataFromAuth($authData, "expires");
         $signing_string = $this->createSigningString($body, $created, $expires);
         $signature = \Sodium_base642bin($this->getSignatureFromAuth($authData), SODIUM_BASE64_VARIANT_ORIGINAL);
         return \Sodium_crypto_sign_verify_detached($signature, $signing_string, $publicKey);
     }
 
+    /**
+     * @param $keyId
+     * @return mixed|string
+     */
+    public function getSubscriberIdFromAuth($keyId)
+    {
+        $keyData = explode("|", $keyId);
+        return $keyData[0] ?? "";
+    }
+
+    /**
+     * @param $body
+     * @param string $created
+     * @param string $expires
+     * @return string
+     * @throws \SodiumException
+     */
     public function createSigningString($body, $created = "", $expires = "")
     {
         $digestSize = 64; // 64 (512-bit), 48 (384-bit), 32 (256-bit), 28 (224-bit)
@@ -290,7 +341,7 @@ class DigitalSignature
     public function getSignatureFromAuth($authData)
     {
         $header = str_replace("Signature ", "", $authData);
-        $authArray = array_filter(explode(' ', $header), 'strlen');
+        $authArray = array_filter(explode(',', $header), 'strlen');
         $signatureData = end($authArray);
         $parseSignature = array_filter(explode('signature="', $signatureData), 'strlen');
         $finalSignature = $parseSignature[1] ?? "";
@@ -302,10 +353,10 @@ class DigitalSignature
      * @param $type
      * @return string|string[]
      */
-    public function getDateFromAuth($authData, $type)
+    public function getDataFromAuth($authData, $type)
     {
         $header = str_replace("Signature ", "", $authData);
-        $authArray = array_filter(explode(' ', $header), 'strlen');
+        $authArray = array_filter(explode(',', $header), 'strlen');
         $date = "";
         foreach ($authArray as $eachItem) {
             $item = array_filter(explode('=', $eachItem), 'strlen');
@@ -316,5 +367,75 @@ class DigitalSignature
             }
         }
         return $date;
+    }
+
+    /**
+     * @param $subscriberId
+     * @return string|null
+     */
+    public function getSigningPublicKeyFromLookup($subscriberId)
+    {
+        /**
+         * @var \Beckn\Core\Model\ResourceModel\BecknLookup\Collection $lookupCollection
+         * @var \Beckn\Core\Model\BecknLookup $becknLookup
+         */
+        $lookupCollection = $this->_lookupCollectionFactory->create();
+        $becknLookup = $lookupCollection->addFieldToFilter("subscriber_id", $subscriberId)
+            ->setOrder("entity_id")->getFirstItem();
+        if ($becknLookup->getEntityId()) {
+            $todayDate = date('Y-m-d');
+            $todayDate = date('Y-m-d', strtotime($todayDate));
+            $validFrom = date('Y-m-d', strtotime($becknLookup->getValidFrom()));
+            $validUntil = date('Y-m-d', strtotime($becknLookup->getValidUntil()));
+            if (($todayDate >= $validFrom) && ($todayDate <= $validUntil)) {
+                $signingPublicKey = $becknLookup->getSigningPublicKey();
+            } else {
+                $signingPublicKey = $this->saveLookup($subscriberId);
+            }
+        } else {
+            $signingPublicKey = $this->saveLookup($subscriberId);
+        }
+        return $signingPublicKey;
+    }
+
+    /**
+     * @param $subscriberId
+     * @return mixed|string
+     */
+    public function saveLookup($subscriberId)
+    {
+        $signingPublicKey = "";
+        $url = $this->getConfigData(self::XML_PATH_SECURITY_REGISTRY_URL);
+        $apiUrl = $url . self::REGISTRY_LOOKUP;
+        $this->_curl->addHeader('content-type', 'application/json');
+        $postBody = [
+            "subscriber_id" => $subscriberId
+        ];
+        $this->_curl->post($apiUrl, json_encode($postBody));
+        $response = $this->_curl->getBody();
+        if (!empty($response)) {
+            $data = json_decode($response, true);
+            foreach ($data as $_data) {
+                $signingPublicKey = $_data["signing_public_key"];
+                $saveData = [
+                    BecknLookupInterface::COUNTRY => $_data["country"] ?? "",
+                    BecknLookupInterface::CITY => $_data["city"] ?? "",
+                    BecknLookupInterface::CREATED_AT => $_data["created"] ?? "",
+                    BecknLookupInterface::VALID_FROM => $_data["valid_from"] ?? "",
+                    BecknLookupInterface::TYPE => $_data["type"] ?? "",
+                    BecknLookupInterface::SIGNING_PUBLIC_KEY => $_data["signing_public_key"] ?? "",
+                    BecknLookupInterface::SUBSCRIBER_ID => $_data["subscriber_id"] ?? "",
+                    BecknLookupInterface::VALID_UNTIL => $_data["valid_until"] ?? "",
+                    BecknLookupInterface::SUBSCRIBER_URL => $_data["subscriber_url"] ?? "",
+                    BecknLookupInterface::DOMAIN => $_data["domain"] ?? "",
+                    BecknLookupInterface::ENCR_PUBLIC_KEY => $_data["encr_public_key"] ?? "",
+                    BecknLookupInterface::UPDATED_AT => $_data["updated"] ?? "",
+                    BecknLookupInterface::STATUS => $_data["status"] ?? "",
+                ];
+                $model = $this->_becknLookupFactory->create();
+                $model->setData($saveData)->save();
+            }
+        }
+        return $signingPublicKey;
     }
 }

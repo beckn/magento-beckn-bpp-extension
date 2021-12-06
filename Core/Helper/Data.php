@@ -303,26 +303,18 @@ class Data extends AbstractHelper
      */
     public function getBapUri($type, $context)
     {
-//        $authorization = $this->_request->getHeader(self::AUTHORIZATION_KEY);
-//        $proxy_authorization = $this->_request->getHeader(self::PROXY_AUTHORIZATION_KEY);
-//        if(!empty($authorization)){
-//            if ($context["bap_uri"] == "https://bpp1.beckn.org/beckn/index/index") {
-//                return $context["bap_uri"];
-//            } else {
-//                return $context['bap_uri'] . "/" . $type;
-//            }
-//        }elseif(!empty($proxy_authorization)){
-//            $model = $this->_becknLookupFactory->create();
-//            $collection = $model->getCollection()->addFieldToFilter('subscriber_id', $context['bap_id'])->getData();
-//            if(!empty($collection)){
-//                $this->saveLookup();
-//            }
-//        }
-        if ($context["bap_uri"] == "https://bpp1.beckn.org/beckn/index/index") {
-            return $context["bap_uri"];
-        } else {
-            return $context['bap_uri'] . "/" . $type;
+        $proxy_authorization = $this->_request->getHeader(self::PROXY_AUTHORIZATION_KEY);
+        if (!empty($proxy_authorization)) {
+            $keyId = $this->_digitalSignature->getDataFromAuth($proxy_authorization, "keyId");
+            $subscriberId = $this->_digitalSignature->getSubscriberIdFromAuth($keyId);
+            $model = $this->_becknLookupFactory->create();
+            $collection = $model->getCollection()
+                ->addFieldToFilter('subscriber_id', $subscriberId)->getData();
+            if (!empty($collection)) {
+                return $collection["subscriber_url"]. "/" . $type;
+            }
         }
+        return $context['bap_uri'] . "/" . $type;
     }
 
     /**
@@ -1055,10 +1047,8 @@ class Data extends AbstractHelper
     public function checkSubscriber($url)
     {
         $apiUrl = $url . self::REGISTRY_SUBSCRIBE;
-
         $this->_curl->addHeader('content-type', 'application/json');
         $postData = $this->getSubscriberBody();
-
         $this->_curl->post($apiUrl, json_encode($postData));
         $response = $this->_curl->getBody();
         $response = json_decode($response, true);
@@ -1180,7 +1170,13 @@ class Data extends AbstractHelper
             ];
             $body = json_encode($apiBody, JSON_UNESCAPED_SLASHES);
             $auth = $this->_request->getHeader(self::AUTHORIZATION_KEY);
-            $authStatus = $this->_digitalSignature->validateAuth($auth, $body);
+            $proxyAuth = $this->_request->getHeader(self::PROXY_AUTHORIZATION_KEY);
+            if (!empty($auth)) {
+                $authStatus = $this->_digitalSignature->validateAuth($auth, $body);
+            }
+            if (!empty($proxyAuth)) {
+                $authStatus = $this->_digitalSignature->validateAuth($proxyAuth, $body);
+            }
         }
         return $authStatus;
     }
