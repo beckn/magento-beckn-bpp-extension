@@ -215,10 +215,11 @@ class ManageCart
 
     /**
      * @param CartInterface $quote
+     * @param string $type
      * @return array
      * @throws NoSuchEntityException
      */
-    public function getFinalItem(CartInterface $quote)
+    public function getFinalItem(CartInterface $quote, $type="init")
     {
         try {
             $allVisibleItems = $quote->getAllVisibleItems();
@@ -227,7 +228,7 @@ class ManageCart
              */
             $finalItems = [];
             foreach ($allVisibleItems as $eachItem) {
-                $finalItems[] = [
+                $eachFinalItem = [
                     "id" => $eachItem->getSku(),
 //                    "descriptor" => [
 //                        "name" => $eachItem->getName(),
@@ -242,13 +243,21 @@ class ManageCart
                     "price" => [
                         "currency" => $quote->getQuoteCurrencyCode(),
                         "value" => $eachItem->getPrice()
-                    ],
-                    "quantity" => [
+                    ]
+                ];
+                if($type=="select"){
+                    $eachFinalItem["quantity"] = [
                         "selected" => [
                             "count" => $eachItem->getQty()
                         ]
-                    ]
-                ];
+                    ];
+                }
+                else{
+                    $eachFinalItem["quantity"] = [
+                        "count" => $eachItem->getQty()
+                    ];
+                }
+                $finalItems[] = $eachFinalItem;
             }
             return $finalItems;
         } catch (NoSuchEntityException $ex) {
@@ -358,7 +367,7 @@ class ManageCart
     {
         try {
             $availableStoreId = $this->getQuoteProductStoreId($quote);
-            $finalItems = $this->getFinalItem($quote);
+            $finalItems = $this->getFinalItem($quote, "select");
             $totalSegment = $this->getTotalSegment($quote);
             $providerDetails = $this->_helper->getProvidersDetails([], $availableStoreId);
             $providerLocation = $this->_helper->getProvidersLocation($providerDetails);
