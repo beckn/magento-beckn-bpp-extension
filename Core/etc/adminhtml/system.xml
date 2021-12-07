@@ -69,6 +69,10 @@
                 </field>
                 <field id="url" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Registry URL</label>
+                    <comment>Please do not include / at the end</comment>
+                </field>
+                <field id="unique_key_id" translate="label" type="text" sortOrder="75" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Unique Key Id</label>
                 </field>
                 <field id="valid_from" translate="label" sortOrder="80" type="date" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Valid From</label>

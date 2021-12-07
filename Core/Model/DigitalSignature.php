@@ -21,6 +21,7 @@ class DigitalSignature
     const ENCRYPTION_PUBLIC_KEY_PATH = 'security_config/security/encryption_public_key';
     const ENCRYPTION_PRIVATE_KEY_PATH = 'security_config/security/encryption_private_key';
     const XML_PATH_SUBSCRIBER_ID = "subscriber_config/subscriber/subscriber_id";
+    const XML_UNIQUE_KEY_ID = "security_config/security/unique_key_id";
     const XML_PATH_SECURITY_REGISTRY_URL = "security_config/security/url";
     const REGISTRY_LOOKUP = "/lookup";
 
@@ -58,6 +59,11 @@ class DigitalSignature
     protected $_lookupCollectionFactory;
 
     /**
+     * @var \Psr\Log\LoggerInterface
+     */
+    protected $_logger;
+
+    /**
      * DigitalSignature constructor.
      * @param \Magento\Framework\App\Config\ConfigResource\ConfigInterface $configInterface
      * @param TypeListInterface $cacheTypeList
@@ -66,6 +72,7 @@ class DigitalSignature
      * @param Curl $curl
      * @param \Beckn\Core\Model\BecknLookupFactory $becknLookupFactory
      * @param LookupCollectionFactory $lookupCollectionFactory
+     * @param \Psr\Log\LoggerInterface $logger
      */
     public function __construct(
         \Magento\Framework\App\Config\ConfigResource\ConfigInterface $configInterface,
@@ -74,7 +81,8 @@ class DigitalSignature
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         Curl $curl,
         \Beckn\Core\Model\BecknLookupFactory $becknLookupFactory,
-        LookupCollectionFactory $lookupCollectionFactory
+        LookupCollectionFactory $lookupCollectionFactory,
+        \Psr\Log\LoggerInterface $logger
     )
     {
         $this->_configInterface = $configInterface;
@@ -84,6 +92,7 @@ class DigitalSignature
         $this->_curl = $curl;
         $this->_becknLookupFactory = $becknLookupFactory;
         $this->_lookupCollectionFactory = $lookupCollectionFactory;
+        $this->_logger = $logger;
     }
 
     /**
@@ -231,7 +240,8 @@ class DigitalSignature
             $subscriberId = $this->getSubscriberId();
             $headers = "(created) (expires) digest";
             $signature = \Sodium_bin2base64($signature, SODIUM_BASE64_VARIANT_ORIGINAL);
-            $authorizationHeader = 'Signature keyId="' . $subscriberId . '|key1|xed25519" algorithm="xed25519" created="' . $created . '" expires="' . $expires . '" headers="' . $headers . '" signature="' . $signature . '"';
+            $uniqueKeyId = $this->getConfigData(self::XML_UNIQUE_KEY_ID);
+            $authorizationHeader = 'Signature keyId="' . $subscriberId . '|'.$uniqueKeyId.'|xed25519",algorithm="xed25519",created="' . $created . '",expires="' . $expires . '",headers="' . $headers . '",signature="' . $signature . '"';
             $authResponse["auth"] = $authorizationHeader;
             $authResponse["success"] = true;
         } catch (\SodiumException $e) {
@@ -304,6 +314,7 @@ class DigitalSignature
         $signing_string = $this->createSigningString($body, $created, $expires);
         $signature = \Sodium_base642bin($this->getSignatureFromAuth($authData), SODIUM_BASE64_VARIANT_ORIGINAL);
         return \Sodium_crypto_sign_verify_detached($signature, $signing_string, $publicKey);
+
     }
 
     /**

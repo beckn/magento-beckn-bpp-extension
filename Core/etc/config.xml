@@ -24,6 +24,7 @@
                 <encryption_private_key></encryption_private_key>
                 <encryption_key_pair></encryption_key_pair>
                 <url></url>
+                <unique_key_id>key1</unique_key_id>
                 <valid_from></valid_from>
                 <valid_until></valid_until>
                 <status></status>

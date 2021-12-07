@@ -327,10 +327,8 @@ class Data extends AbstractHelper
         //array_walk_recursive($postData,function(&$item){$item=strval($item);});
         $postBody = json_encode($postData, JSON_UNESCAPED_SLASHES);
         $authorization = $this->_digitalSignature->createAuthorization($postBody);
-        $this->_logger->info("Authorization Header.");
         if ($authorization["success"] == true) {
             $authHeader = $authorization["auth"];
-            $this->_logger->info($authHeader);
             $this->_curl->addHeader('Authorization', $authHeader);
         }
         $this->_curl->addHeader('content-type', 'application/json');
@@ -1164,11 +1162,7 @@ class Data extends AbstractHelper
     {
         $authStatus = true;
         if ($this->getConfigData(self::XML_PATH_SIGNATURE_AUTH_ENABLE)) {
-            $apiBody = [
-                "context" => $context,
-                "message" => $message
-            ];
-            $body = json_encode($apiBody, JSON_UNESCAPED_SLASHES);
+            $body = $this->_restRequest->getContent();
             $auth = $this->_request->getHeader(self::AUTHORIZATION_KEY);
             $proxyAuth = $this->_request->getHeader(self::PROXY_AUTHORIZATION_KEY);
             if (!empty($auth)) {
