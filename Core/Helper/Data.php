@@ -303,18 +303,22 @@ class Data extends AbstractHelper
      */
     public function getBapUri($type, $context)
     {
-        $proxy_authorization = $this->_request->getHeader(self::PROXY_AUTHORIZATION_KEY);
+        //$proxy_authorization = $this->_request->getHeader(self::PROXY_AUTHORIZATION_KEY);
+        $headers = apache_request_headers();
+        $proxy_authorization = $headers[self::PROXY_AUTHORIZATION_KEY] ?? "";
         if (!empty($proxy_authorization)) {
             $keyId = $this->_digitalSignature->getDataFromAuth($proxy_authorization, "keyId");
             $subscriberId = $this->_digitalSignature->getSubscriberIdFromAuth($keyId);
             $model = $this->_becknLookupFactory->create();
             $collection = $model->getCollection()
-                ->addFieldToFilter('subscriber_id', $subscriberId)->getData();
+                ->addFieldToFilter('subscriber_id', $subscriberId)->getFirstItem()->getData();
             if (!empty($collection)) {
-                return $collection["subscriber_url"]. "/" . $type;
+                $subscriberUrl = rtrim($collection["subscriber_url"], '/');
+                return $subscriberUrl. "/" . $type;
             }
         }
-        return $context['bap_uri'] . "/" . $type;
+        $bapUri = rtrim($context['bap_uri'], '/');
+        return $bapUri . "/" . $type;
     }
 
     /**
@@ -1081,7 +1085,7 @@ class Data extends AbstractHelper
                 "subscriber_id" => $this->getConfigData(self::XML_PATH_SUBSCRIBER_ID),
                 "country" => $this->getCountryName($this->getConfigData(self::XML_PATH_SUBSCRIBER_COUNTRY)),
                 "city" => $this->getConfigData(self::XML_PATH_SUBSCRIBER_CITY),
-                "domain" => $this->getConfigData(self::XML_PATH_SUBSCRIBER_URI),
+                "domain" => $this->getConfigData(self::XML_PATH_SUBSCRIBER_INDUSTRY_DOMAIN),
                 "signing_public_key" => $this->getConfigData(DigitalSignature::SIGN_PUBLIC_KEY_PATH),
                 "encr_public_key" => $this->getConfigData(DigitalSignature::ENCRYPTION_PUBLIC_KEY_PATH),
                 "valid_from" => $this->formatDate($this->getConfigData(self::XML_PATH_SECURITY_VALID_FROM)),
@@ -1162,9 +1166,11 @@ class Data extends AbstractHelper
     {
         $authStatus = true;
         if ($this->getConfigData(self::XML_PATH_SIGNATURE_AUTH_ENABLE)) {
+            $headers = apache_request_headers();
             $body = $this->_restRequest->getContent();
             $auth = $this->_request->getHeader(self::AUTHORIZATION_KEY);
-            $proxyAuth = $this->_request->getHeader(self::PROXY_AUTHORIZATION_KEY);
+            //$proxyAuth = $this->_request->getHeader(self::PROXY_AUTHORIZATION_KEY);
+            $proxyAuth = $headers[self::PROXY_AUTHORIZATION_KEY] ?? "";
             if (!empty($auth)) {
                 $authStatus = $this->_digitalSignature->validateAuth($auth, $body);
             }

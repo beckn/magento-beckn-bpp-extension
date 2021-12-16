@@ -241,7 +241,7 @@ class DigitalSignature
             $headers = "(created) (expires) digest";
             $signature = \Sodium_bin2base64($signature, SODIUM_BASE64_VARIANT_ORIGINAL);
             $uniqueKeyId = $this->getConfigData(self::XML_UNIQUE_KEY_ID);
-            $authorizationHeader = 'Signature keyId="' . $subscriberId . '|'.$uniqueKeyId.'|xed25519",algorithm="xed25519",created="' . $created . '",expires="' . $expires . '",headers="' . $headers . '",signature="' . $signature . '"';
+            $authorizationHeader = 'Signature keyId="' . $subscriberId . '|'.$uniqueKeyId.'|ed25519",algorithm="ed25519",created="' . $created . '",expires="' . $expires . '",headers="' . $headers . '",signature="' . $signature . '"';
             $authResponse["auth"] = $authorizationHeader;
             $authResponse["success"] = true;
         } catch (\SodiumException $e) {
@@ -305,16 +305,21 @@ class DigitalSignature
      */
     public function validateAuth($authData, $body)
     {
-        $keyId = $this->getDataFromAuth($authData, "keyId");
-        $subscriberId = $this->getSubscriberIdFromAuth($keyId);
-        $publicKey = $this->getSigningPublicKeyFromLookup($subscriberId);
-        $publicKey = \Sodium_base642bin($publicKey, SODIUM_BASE64_VARIANT_ORIGINAL);
-        $created = $this->getDataFromAuth($authData, "created");
-        $expires = $this->getDataFromAuth($authData, "expires");
-        $signing_string = $this->createSigningString($body, $created, $expires);
-        $signature = \Sodium_base642bin($this->getSignatureFromAuth($authData), SODIUM_BASE64_VARIANT_ORIGINAL);
-        return \Sodium_crypto_sign_verify_detached($signature, $signing_string, $publicKey);
-
+        try{
+            $keyId = $this->getDataFromAuth($authData, "keyId");
+            $subscriberId = $this->getSubscriberIdFromAuth($keyId);
+            $publicKey = $this->getSigningPublicKeyFromLookup($subscriberId);
+            $publicKey = \Sodium_base642bin($publicKey, SODIUM_BASE64_VARIANT_ORIGINAL);
+            $created = $this->getDataFromAuth($authData, "created");
+            $expires = $this->getDataFromAuth($authData, "expires");
+            $signing_string = $this->createSigningString($body, $created, $expires);
+            $signature = \Sodium_base642bin($this->getSignatureFromAuth($authData), SODIUM_BASE64_VARIANT_ORIGINAL);
+            return \Sodium_crypto_sign_verify_detached($signature, $signing_string, $publicKey);
+        }
+        catch (\SodiumException $ex) {
+            $this->_logger->info($ex->getMessage());
+            return false;
+        }
     }
 
     /**
@@ -356,7 +361,9 @@ class DigitalSignature
         $signatureData = end($authArray);
         $parseSignature = array_filter(explode('signature="', $signatureData), 'strlen');
         $finalSignature = $parseSignature[1] ?? "";
-        return str_replace('"', "", $finalSignature);
+        $signature = str_replace('"', "", $finalSignature);
+        $this->_logger->info("Signature from Auth => ".$signature);
+        return $signature;
     }
 
     /**
