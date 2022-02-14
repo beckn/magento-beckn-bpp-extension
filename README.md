@@ -1,3 +1,15 @@
+# Project Update
+
+|Projects/Products|Version|Versioning Scheme|Manager|Responsible|Accountable|Consulted|Informed|Last update|Last updated date|Next upcoming release date
+|-----------------|-------|-----------------|-------|-----------|-----------|---------|--------|-----------|-----------------|--------------------------
+|Retail Reference BPP|0.1.1|[Version Management](https://docs.google.com/document/d/1HjXV4W2STirMUa2_L8bGWB0ORn9SeYRvJSyUPbntbXY/edit#heading=h.b06d3jp4draa)|Nirmal|Nirmal|Nirmal|Open Community, Indglobal|General Public|End-to-end functionality testing in progress|14 Feb 2022|18 Feb 2022
+
+## Work queue
+|Release|Start Date|End Date|Status|Delay in Days|REQ|Documentation|Code|Logs
+|-------|----------|--------|------|-------------|---|-------------|----|----
+|0.1.1 |25 Jan 2022|18 Feb 2022|In progress| |[Task List](https://github.com/beckn/magento-beckn-bpp-extension/issues?q=milestone%3Av0.1.1+)|[Wiki](https://github.com/beckn/beckn-in-a-box/wiki)|[Codebase](https://github.com/beckn/magento-beckn-bpp-extension)|[Logs](https://github.com/beckn/magento-beckn-bpp-extension/commits/main)
+
+
 ## Beckn Magento 2 Extension
 Beckn Magento 2 Extension. I contain 5 module to connect over Beckn network.
 
