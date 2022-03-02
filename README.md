@@ -11,7 +11,7 @@
 
 
 ## Beckn Magento 2 Extension
-Beckn Magento 2 Extension. I contain 5 module to connect over Beckn network.
+Beckn Magento 2 Extension. It contains 5 module to connect over Beckn network. The extension uses 0.9.3 version of the Beckn Protocol Core Specification.
 
 ### Extension List
 1. Beckn_Core
@@ -67,3 +67,4 @@ This extension is managing all the support related API.
 This extension is a basically a patch for Razorpay_Magento to work both website and Beckn network.
 This extension doesn't contain any API.
 
+The installation instructions for each module within this extension is available in the respective subfolders' readme.md files.
