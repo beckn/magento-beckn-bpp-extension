@@ -55,4 +55,52 @@
             <argument name="resourceModel" xsi:type="string">Beckn\Core\Model\ResourceModel\FulfillmentPolicy</argument>
         </arguments>
     </type>
+
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="beckn_persons_listing_data_source" xsi:type="string">Beckn\Core\Model\ResourceModel\PersonDetails\Grid\Collection</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Beckn\Core\Model\ResourceModel\PersonDetails\Grid\Collection">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">beckn_person_details</argument>
+            <argument name="eventPrefix" xsi:type="string">beckn_person_details_log_collection</argument>
+            <argument name="eventObject" xsi:type="string">grid_collection</argument>
+            <argument name="resourceModel" xsi:type="string">Beckn\Core\Model\ResourceModel\PersonDetails</argument>
+        </arguments>
+    </type>
+
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="beckn_fulfillment_options_listing_data_source" xsi:type="string">Beckn\Core\Model\ResourceModel\ItemFulfillmentOptions\Grid\Collection</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Beckn\Core\Model\ResourceModel\ItemFulfillmentOptions\Grid\Collection">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">beckn_item_fulfillment_options</argument>
+            <argument name="eventPrefix" xsi:type="string">beckn_person_details_log_collection</argument>
+            <argument name="eventObject" xsi:type="string">grid_collection</argument>
+            <argument name="resourceModel" xsi:type="string">Beckn\Core\Model\ResourceModel\ItemFulfillmentOptions</argument>
+        </arguments>
+    </type>
+
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="beckn_event_log_listing_data_source" xsi:type="string">Beckn\Core\Model\ResourceModel\BecknEventLog\Grid\Collection</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Beckn\Core\Model\ResourceModel\BecknEventLog\Grid\Collection">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">beckn_event_log</argument>
+            <argument name="eventPrefix" xsi:type="string">beckn_event_log_collection</argument>
+            <argument name="eventObject" xsi:type="string">event_log_collection</argument>
+            <argument name="resourceModel" xsi:type="string">Beckn\Core\Model\ResourceModel\BecknEventLog</argument>
+        </arguments>
+    </type>
 </config>

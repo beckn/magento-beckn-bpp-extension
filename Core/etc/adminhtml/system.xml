@@ -144,6 +144,29 @@
                     <tooltip><![CDATA[Store pickup means the customer needs to pick up the orders items from the store. That is fulfillment is not provided for the order.<br><br> Home delivery means the items in the order will be delivered to the customer at the location selected by them.]]></tooltip>
                 </field>
             </group>
+            <group id="itemfulfillment" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Fulfillment Type</label>
+                <field id="typeoption" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Add Fulfillment Type</label>
+                    <frontend_model>Beckn\Core\Block\Adminhtml\Itemfulfillment\Options</frontend_model>
+                    <backend_model>Beckn\Core\Model\Config\FulfillmentType\Options</backend_model>
+                </field>
+            </group>
+            <group id="fulfillment_status" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Fulfillment Status</label>
+                <field id="fulfillment_status_type" type="select" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Select status update type</label>
+                    <source_model>Beckn\Core\Model\Config\Source\FulfillmentStatusType</source_model>
+                </field>
+                <field id="fulfillment_option" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Fields of fulfillment status</label>
+                    <depends>
+                        <field id="*/*/fulfillment_status_type">manual_update</field>
+                    </depends>
+                    <frontend_model>Beckn\Core\Block\Adminhtml\FulfillmentStatusType\Options</frontend_model>
+                    <backend_model>Beckn\Core\Model\Config\FulfillmentStatusType\Options</backend_model>
+                </field>
+            </group>
         </section>
         <section id="signature_config" translate="label" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
             <class>separator-top</class>

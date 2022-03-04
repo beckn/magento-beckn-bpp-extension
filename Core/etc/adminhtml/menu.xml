@@ -10,5 +10,8 @@
         <add id="Beckn_Core::pricing" title="Dynamic Pricing Policy" module="Beckn_Core" sortOrder="10" parent="Beckn_Core::policies" action="beckn/pricing/index" resource="Beckn_Core::pricing" />
         <add id="Beckn_Core::location" title="Dynamic Location Policy" module="Beckn_Core" sortOrder="20" parent="Beckn_Core::policies" action="beckn/location/index" resource="Beckn_Core::location"/>
         <add id="Beckn_Core::fulfillment" title="Fulfillment Policy" module="Beckn_Core" sortOrder="30" parent="Beckn_Core::policies" action="beckn/fulfillment/index" resource="Beckn_Core::fulfillment"/>
+        <add id="Beckn_Core::person_details" title="Person Details" module="Beckn_Core" sortOrder="40" parent="Beckn_Core::policies" action="beckn/persons/index" resource="Beckn_Core::persons"/>
+        <add id="Beckn_Core::item_fulfillment_options" title="Item Fulfillment Options" module="Beckn_Core" sortOrder="50" parent="Beckn_Core::policies" action="beckn/itemfulfillment/index" resource="Beckn_Core::fulfillment_options"/>
+        <add id="Beckn_Core::event_log" title="Event Log" module="Beckn_Core" sortOrder="60" parent="Beckn_Core::policies" action="beckn/event/index" resource="Beckn_Core::event_log"/>
     </menu>
 </config>

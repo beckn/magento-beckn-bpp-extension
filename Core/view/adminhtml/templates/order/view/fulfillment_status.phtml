@@ -1,0 +1,105 @@
+<?php
+/**
+ * @var \Beckn\Core\Block\Adminhtml\Order\View\FulfillmentStatus $block
+ */
+?>
+<style>
+    .fulfilllment_status_wraper {
+        width: 100%;
+        max-width: 480px;
+    }
+</style>
+<section class="admin__page-section fulfilllment_status_wraper">
+    <div class="admin__page-section-title">
+        <span class="title"><?= __("Fulfillment Status") ?></span>
+    </div>
+    <div class="admin__page-section-content">
+        <div class="admin__page-section-item-title">
+            <span class="title"><label for="fulfillment_status" class="admin__field-label"><?= __("Select Fulfillment") ?></label></span>
+        </div>
+        <div class="admin__field">
+            <div class="admin__field-control">
+                <?php $fulfillmentStatus = $block->getAllFulfillmentStatus() ?>
+                <select name="fulfillment_status" id="fulfillment_status" class="admin__control-select">
+                    <?php foreach ($fulfillmentStatus as $item): ?>
+                        <option <?= ($block->getOrder()->getFulfillmentStatus() == $item['status_code']) ? 'selected':'' ?> value="<?= $item['status_code'] ?>"><?= __($item['status_message']) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+        </div>
+        <div class="admin__field">
+            <label for="agent_name" class="admin__field-label"><?= __("Agent Name") ?></label>
+            <div class="admin__field-control">
+                <input type="text" class="admin__control-text" id="agent_name" name="agent_name" value="<?= $block->getOrder()->getAgentName(); ?>">
+            </div>
+        </div>
+        <div class="admin__field">
+            <label for="agent_phone" class="admin__field-label"><?= __("Agent Phone") ?></label>
+            <div class="admin__field-control">
+                <input type="text" class="admin__control-text" id="agent_phone" name="agent_phone" value="<?= $block->getOrder()->getAgentPhone(); ?>">
+            </div>
+        </div>
+        <div class="admin__field">
+            <label for="agent_temperature" class="admin__field-label"><?= __("Temperature") ?></label>
+            <div class="admin__field-control">
+                <input type="text" class="admin__control-text" id="agent_temperature" name="agent_temperature" value="<?= $block->getOrder()->getAgentTemperature(); ?>">
+            </div>
+        </div>
+        <div class="admin__field">
+            <label for="tracking_link" class="admin__field-label"><?= __("Tracking Link") ?></label>
+            <div class="admin__field-control">
+                <input type="text" class="admin__control-text" id="tracking_link" name="tracking_link" value="<?= $block->getOrder()->getTrackingLink(); ?>">
+            </div>
+        </div>
+        <div class="admin__field actions-toolbar">
+            <div class="primary">
+                <input type="hidden" class="admin__control-text" id="order_id" name="order_id" value="<?= $block->getOrder()->getId(); ?>">
+                <button type="button" id="submit_fulfillment_status" class="action submit primary" title="<?php echo __('Submit') ?>">
+                    <span><?php echo __('Submit') ?></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    require(['jquery'],
+        function ($) {
+            $(document).ready(function () {
+                $("#submit_fulfillment_status").click(function () {
+                    var fulfillment_status = $('#fulfillment_status').val();
+                    var agent_name = $('#agent_name').val();
+                    var agent_phone = $('#agent_phone').val();
+                    var agent_temperature = $('#agent_temperature').val();
+                    var tracking_link = $('#tracking_link').val();
+                    var order_id = $('#order_id').val();
+                    var formKey = '<?= $block->getFormKey(); ?>';
+                    jQuery('body').loader('show');
+                    $.ajax({
+                        type: "POST",
+                        url: '<?php echo $block->getFormAction(); ?>',
+                        data: {
+                            fulfillment_status: fulfillment_status,
+                            agent_name: agent_name,
+                            agent_phone: agent_phone,
+                            agent_temperature: agent_temperature,
+                            tracking_link: tracking_link,
+                            order_id: order_id,
+                            form_key: formKey,
+                        },
+                        success: function (response) {
+                            jQuery('body').loader('hide');
+                            if (response.success == true) {
+                                $('#messages').remove();
+                                console.log(response.message)
+                                jQuery('<div id="messages"><div class="messages"><div class="message message-success success"><div data-ui-id="messages-message-success">' + response.message + '</div></div></div></div>').insertAfter(".page-main-actions");
+                            }
+                            if (response.success == false) {
+                                $('#messages').remove();
+                                jQuery('<div id="messages"><div class="messages"><div class="message message-error error"><div data-ui-id="messages-message-error">' + response.message + '</div></div></div></div>').insertAfter(".page-main-actions");
+                            }
+                        }
+                    });
+                });
+            });
+        });
+</script>

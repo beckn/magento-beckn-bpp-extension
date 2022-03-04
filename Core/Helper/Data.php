@@ -49,20 +49,29 @@ class Data extends AbstractHelper
     const LOCATION_ID = "provider_address";
     const CATALOG_MEDIA_DIR = 'catalog/product';
     const ON_SEARCH = "on_search";
+    const KEY_SEARCH = "search";
     const ON_SELECT = "on_select";
+    const KEY_SELECT = "select";
     const ON_INIT = "on_init";
+    const KEY_INIT = "init";
     const ON_CONFIRM = "on_confirm";
+    const KEY_CONFIRM = "confirm";
     const ON_STATUS = "on_status";
+    const KEY_STATUS = "status";
     const ON_SUPPORT = "on_support";
+    const KEY_SUPPORT = "support";
     //const ON_CANCEL = "on_cancel";
     const ON_CANCEL = "cancellation_reasons";
     const ON_UPDATE = "on_update";
+    const KEY_UPDATE = "update";
     const ON_TRACK = "on_track";
+    const KEY_TRACK = "track";
     const ON_RATING = "on_rating";
     const ACK = "ACK";
     const NACK = "NACK";
     const ERROR_CODE = [
         "bad_request" => 400,
+        "business_error" => 40000,
     ];
     const EXCLUDE_TOTALS = [
         "subtotal",
@@ -87,6 +96,46 @@ class Data extends AbstractHelper
 
     const AUTHORIZATION_KEY = 'Authorization';
     const PROXY_AUTHORIZATION_KEY = 'Proxy-Authorization';
+
+    const PACKING_ORDER = "PACKING-ORDER";
+    const SEARCHING_FOR_AGENT = "SEARCHING-FOR-AGENT";
+    const ASSIGNED_AGENT = "ASSIGNED-AGENT";
+    const EN_ROUTE_TO_PICKUP = "EN-ROUTE-TO-PICKUP";
+    const AT_PICKUP_LOCATION = "AGENT-AT-PICKUP";
+    const ORDER_PICKED_UP = "ORDER-PICKED-UP";
+    const EN_ROUTE_TO_DROP = "EN-ROUTE-TO-DROP";
+    const AT_DROP_LOCATION = "AT-DROP-LOCATION";
+    const DELIVERED_PACKAGE = "DELIVERED-PACKAGE";
+    const COLLECTED_CASH_PAYMENT = "COLLECTED-CASH-PAYMENT";
+    const CANCELLED_PACKAGE = "CANCELLED-PACKAGE";
+    const RETURNED_PACKAGE = "RETURNED-PACKAGE";
+
+    const DEFAULT_FULFILMENT_STATUS = "Packing your order";
+
+    const FULFILLMENT_STATUS_CODES = [
+        self::PACKING_ORDER,
+        self::SEARCHING_FOR_AGENT,
+        self::ASSIGNED_AGENT,
+        self::EN_ROUTE_TO_PICKUP,
+        self::AT_PICKUP_LOCATION,
+        self::ORDER_PICKED_UP,
+        self::EN_ROUTE_TO_DROP,
+        self::AT_DROP_LOCATION,
+        self::DELIVERED_PACKAGE,
+        self::COLLECTED_CASH_PAYMENT,
+        self::CANCELLED_PACKAGE,
+        self::RETURNED_PACKAGE,
+    ];
+
+    const ORDER_STATUS_LIST = [
+        "pending" => 'PENDING-CONFIRMATION',
+        "processing" => 'CONFIRMED',
+        "complete" => 'COMPLETE',
+        "cancelled" => 'CANCELLED',
+    ];
+
+    const TRACKING_ACTIVE = "active";
+    const TRACKING_INACTIVE = "inactive";
 
     /*
      * ALL Config XML PATH
@@ -117,6 +166,8 @@ class Data extends AbstractHelper
     const XML_PATH_SUPPORT_PHONE = "provider_config/support_info/phone";
     const XML_PATH_SUPPORT_EMAIL = "provider_config/support_info/email";
     const XML_PATH_SUPPORT_URL = "provider_config/support_info/url";
+    const XML_PATH_FULFILLMENT_STATUS_TYPE = "fulfillment_config/fulfillment_status/fulfillment_status_type";
+    const XML_PATH_FULFILLMENT_STATUS = "fulfillment_config/fulfillment_status/fulfillment_option";
 
     /**
      * @var StoreManagerInterface
@@ -210,6 +261,7 @@ class Data extends AbstractHelper
      * @var StoreRepositoryInterface
      */
     protected $_storeRepository;
+
     /**
      * @var ProductRepository
      */
@@ -231,6 +283,7 @@ class Data extends AbstractHelper
      * @param Pool $cacheFrontendPool
      * @param BecknLookupFactory $becknLookupFactory
      * @param \Magento\Framework\Webapi\Request $request
+     * @param \Magento\Framework\Webapi\Rest\Request $restRequest
      * @param DigitalSignature $digitalSignature
      * @param PricePolicyFactory $pricePolicyFactory
      * @param LocationPolicyFactory $locationPolicyFactory
@@ -322,6 +375,22 @@ class Data extends AbstractHelper
     }
 
     /**
+     * @return mixed|string
+     */
+    public function getSubscriberIdFromAuth(){
+        $params = $this->_restRequest->getBodyParams();
+        $subscriberId = $params['context']['bap_id'];
+//        $headers = apache_request_headers();
+//        $authorization = $headers[self::AUTHORIZATION_KEY] ?? "";
+//        $subscriberId = "";
+//        if (!empty($authorization)) {
+//            $keyId = $this->_digitalSignature->getDataFromAuth($authorization, "keyId");
+//            $subscriberId = $this->_digitalSignature->getSubscriberIdFromAuth($keyId);
+//        }
+        return $subscriberId;
+    }
+
+    /**
      * @param $apiUrl
      * @param $postData
      * @return mixed
@@ -338,11 +407,26 @@ class Data extends AbstractHelper
         $this->_curl->addHeader('content-type', 'application/json');
         $this->_curl->post($apiUrl, $postBody);
         $response = $this->_curl->getBody();
+        $responseData = json_decode($response, true);
         $this->_logger->info("Response Data.");
         $this->_logger->info(json_encode($postData));
         $this->_logger->info("Endpoint => " . $apiUrl);
         $this->_logger->info("Response of Sandbox");
         $this->_logger->info($response);
+        $this->_eventManager->dispatch(
+            'beckn_event_save',
+            [
+                'event_type' => strtolower($entityType),
+                'event_name' => "Response sent",
+                "transaction_id" => $transactionId,
+                "event_data" => json_encode($postData),
+                "response_data" => $response,
+                "subscriber_id" => $postData["context"]['bap_id'] ?? "",
+                "message_id" => $postData["context"]['message_id'] ?? "",
+                "error_code" => $postData["message"]['error']['code'] ?? "",
+                "acknowledgement_status" => $responseData["message"]['ack']["status"] ?? "",
+            ]
+        );
         return json_decode($response, true);
     }
 
@@ -518,6 +602,15 @@ class Data extends AbstractHelper
     public function currentStoreId()
     {
         return $this->_storeManager->getStore()->getId();
+    }
+
+    /**
+     * @return int
+     * @throws NoSuchEntityException
+     */
+    public function currentWebsiteId()
+    {
+        return $this->_storeManager->getStore()->getWebsiteId();
     }
 
     /**
@@ -1174,8 +1267,11 @@ class Data extends AbstractHelper
             if (!empty($auth)) {
                 $authStatus = $this->_digitalSignature->validateAuth($auth, $body);
             }
-            if (!empty($proxyAuth)) {
+            elseif (!empty($proxyAuth)) {
                 $authStatus = $this->_digitalSignature->validateAuth($proxyAuth, $body);
+            }
+            else{
+                $authStatus = false;
             }
         }
         return $authStatus;
@@ -1372,5 +1468,114 @@ class Data extends AbstractHelper
 
         // Output the 36 character UUID.
         return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+    }
+
+    /**
+     * @param $data
+     * @return bool
+     */
+    public function logData($data){
+        $this->_logger->info($data);
+        return true;
+    }
+
+    /**
+     * @param $context
+     * @param $acknowledge
+     * @return bool
+     */
+    public function apiResponseEvent($context, $acknowledge){
+        $transactionId = $context["transaction_id"] ?? "";
+        $entityType = $context["action"] ?? "";
+        $requestBody = $this->_restRequest->getBodyParams();
+        $this->_eventManager->dispatch(
+            'beckn_event_save',
+            [
+                'event_type' => strtolower($entityType),
+                'event_name' => "Acknowledgement sent",
+                "transaction_id" => $transactionId,
+                "event_data" => json_encode($requestBody),
+                "response_data" => json_encode($acknowledge),
+                "subscriber_id" => $context['bap_id'] ?? "",
+                "message_id" => $context['message_id'] ?? "",
+                "error_code" => "",
+                "acknowledgement_status" => $acknowledge["message"]['ack']["status"] ?? "",
+            ]
+        );
+        return true;
+    }
+
+    /**
+     * @param $order
+     * @return bool
+     */
+    public function dispatchFulfillmentSave($order){
+        $this->_eventManager->dispatch(
+            'sales_order_fulfillment_save_after',
+            [
+                'order' => $order,
+                'event_name' => "fulfillment_save_after",
+            ]
+        );
+        return true;
+    }
+
+    /**
+     * @param $statusCode
+     * @return mixed|string
+     */
+    public function getFulfillmentStatusByCode($statusCode){
+        $fulfillmentStatus = $this->getAllFulfilmentStatus();
+        return $fulfillmentStatus[$statusCode]["status_message"] ?? self::DEFAULT_FULFILMENT_STATUS;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllFulfilmentStatus(){
+        $fulfillment = $this->getConfigData(self::XML_PATH_FULFILLMENT_STATUS);
+        $fulfillmentData = json_decode($fulfillment, true);
+        $fulfillmentStatus = [];
+        if(!empty($fulfillmentData)) {
+            foreach ($fulfillmentData as $item) {
+                $fulfillmentStatus[$item["status_code"]] = [
+                    "status_message" => $item['status_message'],
+                    "parent_status" => $item['parent_status'],
+                ];
+            }
+        }
+        return $fulfillmentStatus;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRestApiData(){
+        return $this->_restRequest->getBodyParams();
+    }
+
+    /**
+     * @param $price
+     * @return string
+     */
+    public function formatPrice($price){
+        return number_format($price, 0, '.', '');
+    }
+
+    /**
+     * @param $qty
+     * @return int
+     */
+    public function formatQty($qty){
+        $qty = (int)$qty;
+        return $qty;
+    }
+
+    /**
+     * @param $statusCode
+     * @return string
+     */
+    public function getOrderStatusByCode($statusCode){
+        return self::ORDER_STATUS_LIST[$statusCode] ?? "";
     }
 }

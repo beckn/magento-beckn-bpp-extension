@@ -3,4 +3,7 @@
     <event name="sales_order_save_after">
         <observer name="magento_orderevent_create" instance="Beckn\Core\Observer\OrderOnStatus" />
     </event>
+    <event name="sales_order_fulfillment_save_after">
+        <observer name="magento_order_fulfillment_save" instance="Beckn\Core\Observer\OrderOnStatus" />
+    </event>
 </config>

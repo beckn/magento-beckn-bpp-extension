@@ -30,13 +30,26 @@ class TrackRepository implements \Beckn\Checkout\Api\TrackRepositoryInterface
      */
     protected $_logger;
 
+    /**
+     * @var ManageOrder $manageOrder
+     */
+    protected $_manageOrder;
+
+    /**
+     * TrackRepository constructor.
+     * @param Helper $helper
+     * @param LoggerInterface $logger
+     * @param ManageOrder $manageOrder
+     */
     public function __construct(
         Helper $helper,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        ManageOrder $manageOrder
     )
     {
         $this->_helper = $helper;
         $this->_logger = $logger;
+        $this->_manageOrder = $manageOrder;
     }
 
     public function trackOrder($context, $message)
@@ -54,6 +67,7 @@ class TrackRepository implements \Beckn\Checkout\Api\TrackRepositoryInterface
                 $acknowledge["message"]["ack"]["status"] = Helper::NACK;
                 $acknowledge["error"] = $errorAcknowledge;
             }
+            $this->_helper->apiResponseEvent($context, $acknowledge);
             echo json_encode($acknowledge);
             session_write_close();
             fastcgi_finish_request();
@@ -83,10 +97,16 @@ class TrackRepository implements \Beckn\Checkout\Api\TrackRepositoryInterface
         $onTrackResponse["context"] = $this->_helper->getContext($context);
         $apiUrl = $this->_helper->getBapUri(Helper::ON_TRACK, $context);
         try {
+            $order = $this->_manageOrder->loadByIncrementId($message["order_id"]);
+            $status = Helper::TRACKING_ACTIVE;
+            if($order->getData("fulfillment_status")==Helper::DELIVERED_PACKAGE){
+                $status = Helper::TRACKING_INACTIVE;
+            }
             $onTrackResponse["message"] = [
                 "tracking" => [
-                    "url" => "https://tinyurl.com/y2tguhnr",
-                    "status" => "active"
+                    //"url" => "https://tinyurl.com/y2tguhnr",
+                    "url" => (string)$order->getData("tracking_link"),
+                    "status" => $status
                 ]
             ];
         } catch (NoSuchEntityException $ex) {

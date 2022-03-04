@@ -16,6 +16,14 @@ use Beckn\Checkout\Model\Config\FilterOption\PaymentStatus;
  */
 class ManageOrder
 {
+
+    const ORDER_STATIC_STATUS = [
+        "0" => "Order being packed",
+        "10" => "Order packed and ready to ship",
+        "20" => "Order picked up",
+        "30" => "Order delivered",
+    ];
+
     /**
      * @var Helper
      */
@@ -125,19 +133,66 @@ class ManageOrder
             $transactionStatus = $this->_razorpay->getRazorpayTransactionStatus($order->getQuoteId());
             $params["transaction_status"] = $transactionStatus;
         }
+        $fulfillment = $this->_manageCheckout->getFulfillmentAddress($fulfillmentAddress, $providerDetails);
+
+        $fulfillment["state"] = [
+            "descriptor" => [
+                "name" => $this->getFulfillmentStatus($order->getData("fulfillment_status")),
+                "code" => ($order->getData("fulfillment_status")=="") ? Helper::PACKING_ORDER : $order->getData("fulfillment_status"),
+            ]
+        ];
+        $fulfillment["agent"] = [
+            "name" => $order->getData("agent_name"),
+            "phone" => $order->getData("agent_phone"),
+        ];
         return [
             "id" => $order->getIncrementId(),
-            "state" => $order->getStatusLabel(),
+            //"state" => $order->getStatusLabel(),
+            "state" => $this->_helper->getOrderStatusByCode($order->getState()),
             "provider" => $providerDetails,
             "provider_location" => [
                 "id" => $providerLocation["id"]
             ],
             "items" => $finalItems,
             "billing" => $billingAddress,
-            "fulfillment" => $this->_manageCheckout->getFulfillmentAddress($fulfillmentAddress, $providerDetails),
+            "fulfillment" => $fulfillment,
             "quote" => $this->_manageCart->getOrderTotalSegment($order),
             "payment" => $this->_manageCheckout->getPaymentData($status, $order->getGrandTotal(), $order->getOrderCurrencyCode(), $params)
         ];
+    }
+
+    /**
+     * @param $fulfillmentStatus
+     * @return mixed|string
+     */
+    public function getFulfillmentStatus($fulfillmentStatus){
+        return $this->_helper->getFulfillmentStatusByCode($fulfillmentStatus);
+    }
+
+    /**
+     * @param $orderDate
+     * @return string
+     */
+    public function getOrderStaticStatus($orderDate){
+        $currentTime = strtotime(date("y-m-d H:i:s"));
+        $orderDateTime = strtotime($orderDate);
+        $differenceInSeconds = $currentTime-$orderDateTime;
+        $this->_helper->logData("Time difference => ".$differenceInSeconds);
+        if($differenceInSeconds>=0 && $differenceInSeconds<=20){
+            return self::ORDER_STATIC_STATUS[0];
+        }
+        elseif ($differenceInSeconds>=20 && $differenceInSeconds<=40){
+            return self::ORDER_STATIC_STATUS[10];
+        }
+        elseif ($differenceInSeconds>=40 && $differenceInSeconds<=60){
+            return self::ORDER_STATIC_STATUS[20];
+        }
+        elseif ($differenceInSeconds>=60 && $differenceInSeconds<=80){
+            return self::ORDER_STATIC_STATUS[30];
+        }
+        else{
+            return self::ORDER_STATIC_STATUS[30];
+        }
     }
 
     /**
@@ -155,15 +210,19 @@ class ManageOrder
              */
             foreach ($allVisibleItems as $eachItem) {
                 $finalItems[] = [
-                    "id" => $eachItem->getSku(),
+                    "id" => $eachItem->getId(),
                     "price" => [
                         "currency" => $order->getOrderCurrencyCode(),
-                        "value" => $eachItem->getPrice()
+                        "value" => $this->_helper->formatPrice($eachItem->getPrice())
                     ],
                     "quantity" => [
                         "selected" => [
                             "count" => $eachItem->getQtyOrdered()
                         ]
+                    ],
+                    "descriptor" => [
+                        "code" => $eachItem->getSku(),
+                        "name" => $eachItem->getName()
                     ]
                 ];
             }

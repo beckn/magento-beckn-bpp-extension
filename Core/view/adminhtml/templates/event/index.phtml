@@ -1,0 +1,17 @@
+<?php
+/**
+ * @var \Magento\Framework\View\Element\Template $block
+ */
+?>
+
+<script>
+    require(['jquery'],
+        function ($) {
+            $(document).ready(function () {
+                setInterval(function () {
+                    console.log('Page refreshing');
+                    window.location.reload();
+                }, 15000);
+            });
+        });
+</script>
