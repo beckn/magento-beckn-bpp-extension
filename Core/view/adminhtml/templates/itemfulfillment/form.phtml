@@ -1,0 +1,249 @@
+<?php
+/**
+ * @var \Beckn\Core\Block\Adminhtml\Itemfulfillment\Form $block
+ */
+?>
+<?php
+$allPersons = $block->getAllPersons();
+$model = $block->getItemFulfillmentData();
+
+?>
+<div class="price_policy_container">
+    <div class="page-main-actions">
+        <div class="page-actions" data-ui-id="page-actions-toolbar-content-header">
+            <div class="page-actions-inner" data-title="Edit Order Item ">
+                <div class="page-actions-buttons">
+                    <button id="save_item" title="Save" type="button" class="action- scalable primary">
+                        <span><?= /* @escapeNotVerified */ __('Save') ?></span>
+                    </button>
+                </div>
+                <?php if($model->getEntityId()!=""): ?>
+                    <div class="page-actions-buttons">
+                        <button id="person_details_delete" title="Delete" type="button" class="action- scalable primary " data-ui-id="add-order-item-back-button">
+                            <span><?= /* @escapeNotVerified */ __('Delete') ?></span>
+                        </button>
+                    </div>
+                <?php endif; ?>
+                <div class="page-actions-buttons">
+                    <button id="back" title="Back" type="button" class="action-default scalable back" onclick="setLocation('<?= /* @escapeNotVerified */ $this->getUrl('beckn/itemfulfillment/index') ?>')" data-ui-id="add-order-item-back-button">
+                        <span><?= /* @escapeNotVerified */ __('Back') ?></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="page:main-container" class="page-columns">
+        <div class="admin__old">
+            <div id="container" class="main-col">
+                <form action="<?= $block->getFormAction() ?>" method="post" id='itemfulfillment_option_form' enctype="multipart/form-data">
+                    <input name="form_key" type="hidden" value="<?= /* @escapeNotVerified */ $block->getFormKey(); ?>">
+                    <?php if($model->getEntityId()!=""): ?>
+                        <input name="entity_id" type="hidden" value="<?= /* @escapeNotVerified */ $model->getEntityId(); ?>">
+                    <?php endif; ?>
+                    <div class="admin__field field col-3 main_col _required">
+                        <label class="label admin__field-label" for="name">
+                            <span><?= /* @escapeNotVerified */ __('Name') ?></span>
+                        </label>
+                        <div class="admin__field-control control">
+                            <input id="name" name="name" title="Name" class="input-text admin__control-text required-entry required-entry _required" type="text" aria-required="true" value="<?= $model->getName() ?>">
+                        </div>
+                    </div>
+                    <div class="admin__field field col-3 main_col _required">
+                        <label class="label admin__field-label" for="fulfillment_type">
+                            <span><?= /* @escapeNotVerified */ __('Fulfillment Type') ?></span>
+                        </label>
+                        <div class="admin__field-control control">
+                            <select name="fulfillment_type" id="fulfillment_type" class="admin__control-select" required>
+                                <option value="">Please Select</option>
+                                <?php foreach($block->getFulfillmentType() as $fulfillmentType):?>
+                                    <?php if($fulfillmentType->fulfillment_status == 0) continue; ?>
+                                    <?php $selected = ($fulfillmentType->label==$model->getFulfillmentType()) ? "selected" : ""; ?>
+                                    <option value="<?= $fulfillmentType->label ?>" <?= $selected ?>><?= $fulfillmentType->label ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="admin__field field col-3 main_col _required">
+                        <label class="label admin__field-label" for="fulfillment_person">
+                            <span><?= /* @escapeNotVerified */ __('Fulfillment Person') ?></span>
+                        </label>
+                        <div class="admin__field-control control">
+                            <select name="fulfillment_person" id="fulfillment_person" class="admin__control-select" required>
+                                <option value="">Please Select</option>
+                                <?php foreach($allPersons as $person):?>
+                                    <?php $selectedPerson = ($person['name']==$model->getFulfillmentPerson()) ? "selected" : ""; ?>
+                                    <option value="<?= $person['name'] ?>" <?= $selectedPerson ?>><?= $person['name'] ?></option>
+                                <?php endforeach;?>
+                            </select>
+                        </div>
+                    </div>
+                    <?= $this->getChildHtml("item_fulfillment_times"); ?>
+                    <div class="admin__field field col-3 main_col _required">
+                        <label class="label admin__field-label" for="fulfillment_location">
+                            <strong><?= /* @escapeNotVerified */ __('Fulfillment Location') ?>
+                                <input type="checkbox" name="fulfillment_location" id="fulfillment_location" value="1" <?= (($model->getFulfillmentLocation() == 1) ? 'checked' : '');?>>
+                            </strong>
+                        </label>
+                        <div class="fulfillment_location_input" id="fulfillment_location_input" style="display: none">
+                            <div class="admin__field field col-3 _required">
+                                <label class="label admin__field-label" for="gps">
+                                    <span><?= /* @escapeNotVerified */ __('GPS') ?></span>
+                                </label>
+                                <div class="admin__field-control control">
+                                    <input id="gps" name="gps" title="GPS" class="input-text admin__control-text" type="text" aria-required="true" value="<?= $model->getGps() ?>">
+                                </div>
+                            </div>
+                            <div>
+                                <strong><u>Address</u></strong>
+                            </div>
+                            <div class="admin__field field col-3 _required">
+                                <label class="label admin__field-label" for="location_name">
+                                    <span><?= /* @escapeNotVerified */ __('Name') ?></span>
+                                </label>
+                                <div class="admin__field-control control">
+                                    <input id="location_name" name="location_name" title="Location Name" class="input-text admin__control-text" type="text" aria-required="true" value="<?= $model->getLocationName() ?>">
+                                </div>
+                            </div>
+                            <div class="admin__field field col-3 _required">
+                                <label class="label admin__field-label" for="building">
+                                    <span><?= /* @escapeNotVerified */ __('Building') ?></span>
+                                </label>
+                                <div class="admin__field-control control">
+                                    <input id="building" name="building" title="Building" class="input-text admin__control-text" type="text" aria-required="false" value="<?= $model->getBuilding() ?>">
+                                </div>
+                            </div>
+
+                            <div class="admin__field field col-3 _required">
+                                <label class="label admin__field-label" for="street">
+                                    <span><?= /* @escapeNotVerified */ __('Street') ?></span>
+                                </label>
+                                <div class="admin__field-control control">
+                                    <input id="street" name="street" title="Street" class="input-text admin__control-text" type="text" aria-required="true" value="<?= $model->getStreet() ?>">
+                                </div>
+                            </div>
+                            <div class="admin__field field col-3 _required">
+                                <label class="label admin__field-label" for="locality">
+                                    <span><?= /* @escapeNotVerified */ __('Locality') ?></span>
+                                </label>
+                                <div class="admin__field-control control">
+                                    <input id="locality" name="locality" title="Locality" class="input-text admin__control-text" type="text" aria-required="true" value="<?= $model->getLocality() ?>">
+                                </div>
+                            </div>
+                            <div class="admin__field field col-3 _required">
+                                <label class="label admin__field-label" for="ward">
+                                    <span><?= /* @escapeNotVerified */ __('Ward') ?></span>
+                                </label>
+                                <div class="admin__field-control control">
+                                    <input id="ward" name="ward" title="Ward" class="input-text admin__control-text" type="text" aria-required="true" value="<?= $model->getWard() ?>">
+                                </div>
+                            </div>
+
+                            <div class="admin__field field col-3 _required">
+                                <label class="label admin__field-label" for="city">
+                                    <span><?= /* @escapeNotVerified */ __('City') ?></span>
+                                </label>
+                                <div class="admin__field-control control">
+                                    <input id="city" name="city" title="City" class="input-text admin__control-text" type="text" aria-required="true" value="<?= $model->getCity() ?>">
+                                </div>
+                            </div>
+
+                            <div class="admin__field field col-3 _required">
+                                <label class="label admin__field-label" for="state">
+                                    <span><?= /* @escapeNotVerified */ __('State') ?></span>
+                                </label>
+                                <div class="admin__field-control control">
+                                    <input id="state" name="state" title="State" class="input-text admin__control-text" type="text" aria-required="true" value="<?= $model->getState() ?>">
+                                </div>
+                            </div>
+
+                            <div class="admin__field field col-3 _required">
+                                <label class="label admin__field-label" for="country">
+                                    <span><?= /* @escapeNotVerified */ __('Country') ?></span>
+                                </label>
+                                <div class="admin__field-control control">
+                                    <input id="country" name="country" title="Country" class="input-text admin__control-text" type="text" aria-required="true" value="<?= $model->getCountry() ?>">
+                                </div>
+                            </div>
+
+                            <div class="admin__field field col-3 _required">
+                                <label class="label admin__field-label" for="area_code">
+                                    <span><?= /* @escapeNotVerified */ __('Area Code') ?></span>
+                                </label>
+                                <div class="admin__field-control control">
+                                    <input id="area_code" name="area_code" title="Area Code" class="input-text admin__control-text" type="text" aria-required="true" value="<?= $model->getAreaCode() ?>">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    require([
+        'jquery',
+        'Magento_Ui/js/modal/confirm'
+    ], function ($, confirmation) {
+        $('#save_item').click(function(){
+            $("form#itemfulfillment_option_form").submit();
+        });
+        $('#person_details_delete').on('click', function (e){
+            e.preventDefault();
+            confirmation({
+                title: 'Delete',
+                content: 'Do you want to delete this record?',
+                actions: {
+                    confirm: function () {
+                        setLocation('<?= /* @escapeNotVerified */ $this->getUrl('beckn/location/delete', ["id" => $model->getEntityId()]) ?>');
+                    },
+                    cancel: function () {
+                        return false;
+                    }
+                }
+            });
+        });
+
+        $(document).ready(function(){
+            $('#fulfillment_location').on('click', function () {
+                if($('#fulfillment_location').is(":checked")){
+                    $('#fulfillment_location_input').show();
+                }else{
+                    $('#fulfillment_location_input').hide();
+                }
+            })
+        });
+
+        $(document).ready(function(){
+            if($('#fulfillment_location').is(":checked")){
+                $('#fulfillment_location_input').show();
+            }
+        });
+
+    });
+</script>
+<script type="text/x-magento-init">
+    {
+        "#itemfulfillment_option_form": {
+            "validation": {}
+        }
+    }
+
+
+</script>
+<style type="text/css">
+    .price_policy_container .main_col {width: 50%;margin: 15px auto;}
+    .each_policy .col-6, .each_headers .col-6 {width: 50%;padding: 10px;}
+    .each_method {width: 20%;margin-top: 10px;}
+    .method_wraper {display: flex;}
+    .each_policy, .each_headers {display: flex;position: relative;}
+    .each_policy .col-6:first-child, .each_headers .col-6:first-child {padding-left: 0px;}
+    .each_policy .col-6:last-child, .each_headers .col-6:last-child {padding-right: 0px;}
+    .remove_each_policy, .remove_each_policy_header {position: absolute;right: -75px;top: 28px;}
+
+    .fulfillment_location_input label {
+        display: inline-block;
+        width: 150px;
+        text-align: left;
+    }
+</style>

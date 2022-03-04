@@ -1,0 +1,113 @@
+<?php
+/**
+ * @var \Beckn\Core\Block\Adminhtml\Itemfulfillment\Form $block
+ */
+?>
+<?php
+    $model = $block->getItemFulfillmentData();
+    $fulfillmentTimesData = $block->getItemFulfillmentTimes($model->getEntityId());
+
+?>
+<div class="admin__field field col-3 main_col">
+    <label class="label admin__field-label" for="request_headers">
+        <span><?= /* @escapeNotVerified */ __('Fulfillment Times') ?></span>
+    </label>
+    <div class="policy_headers itemfulfillment_times">
+        <?php if(!empty($fulfillmentTimesData->getData()) && $fulfillmentTimesData->getSize()): ?>
+            <?php foreach ($fulfillmentTimesData->getData() as $key => $times): ?>
+                <div class="each_headers each_fulfillment_times row">
+                    <div class="col-6">
+                        <label class="label admin__field-label">
+                            <span><?= /* @escapeNotVerified */ __('Start Time') ?></span>
+                        </label>
+                        <div class="admin__field-control control">
+                            <input name="fulfillmentTimes[start_time][]" title="Start Time" class="input-text admin__control-text" type="datetime-local" aria-required="true" value="<?= date ('Y-m-d\TH:i:s', strtotime($times['start_time'])); ?>">
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <label class="label admin__field-label">
+                            <span><?= /* @escapeNotVerified */ __('End Time') ?></span>
+                        </label>
+                        <div class="admin__field-control control">
+                            <input name="fulfillmentTimes[end_time][]" title="End Time" class="input-text admin__control-text" type="datetime-local" aria-required="true" value="<?= date ('Y-m-d\TH:i:s', strtotime($times['end_time'])); ?>">
+                        </div>
+                    </div>
+                    <?php if($key!=0): ?>
+                        <div class="primary remove_each_policy_header remove_each_fulfillment_times">
+                            <button type="button" class="remove_header">
+                            <span><?= __('Delete') ?><span>
+                            </button>
+                        </div>
+                    <?php endif; ?>
+                </div>
+                <?php endforeach; ?>
+                <?php else: ?>
+            <div class="each_headers each_fulfillment_times row">
+                <div class="col-6">
+                    <label class="label admin__field-label">
+                        <span><?= /* @escapeNotVerified */ __('Start Time') ?></span>
+                    </label>
+                    <div class="admin__field-control control">
+                        <input name="fulfillmentTimes[start_time][]" title="Start Time" class="input-text admin__control-text" type="datetime-local" aria-required="true" value="">
+                    </div>
+                </div>
+                <div class="col-6">
+                    <label class="label admin__field-label">
+                        <span><?= /* @escapeNotVerified */ __('End Time') ?></span>
+                    </label>
+                    <div class="admin__field-control control">
+                        <input name="fulfillmentTimes[end_time][]" title="End Time" class="input-text admin__control-text" type="datetime-local" aria-required="true" value="">
+                    </div>
+                </div>
+            </div>
+            <?php endif; ?>
+    </div>
+    <div class="actions-toolbar admin__field field">
+        <div class="primary">
+            <button type="button" id="add_more_fulfillment_times" class="action" title="<?php echo __('Add More') ?>">
+                <span><?php echo __('Add More') ?></span>
+            </button>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    require([
+        'jquery',
+        'Magento_Ui/js/modal/modal',
+        'mage/url',
+        'mage/translate',
+        'mage/calendar'
+    ], function ($, modal, url, $t) {
+        $('#add_more_fulfillment_times').click(function () {
+            var html = '<div class="each_headers each_fulfillment_times row">' +
+                '<div class="col-6">' +
+                '<label class="label admin__field-label">' +
+                '<span>Start Time</span>' +
+                '</label>' +
+                '<div class="admin__field-control control">' +
+                '<input name="fulfillmentTimes[start_time][]" title="Start Time" class="input-text admin__control-text" type="datetime-local" aria-required="true" value="">' +
+                '</div>' +
+                '</div>' +
+                '<div class="col-6">' +
+                '<label class="label admin__field-label">' +
+                '<span>End Time</span>' +
+                '</label>' +
+                '<div class="admin__field-control control">' +
+                '<input name="fulfillmentTimes[end_time][]" title="End Time" class="input-text admin__control-text" type="datetime-local" aria-required="true" value="">' +
+                '</div>' +
+                '</div>' +
+                '<div class="primary remove_each_policy_header remove_each_fulfillment_times">'+
+                '<button type="button" class="remove_header">'+
+                '<span>Delete<span>'+
+                '</button>'+
+                '</div>'+
+                '</div>';
+            $('.itemfulfillment_times').append(html);
+        });
+        jQuery(document).on('click', '.remove_each_fulfillment_times', function (e) {
+            e.preventDefault();
+            jQuery(this).closest('.each_fulfillment_times').remove();
+            return false;
+        });
+    });
+</script>

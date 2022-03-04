@@ -1,0 +1,123 @@
+<?php
+/**
+ * @var \Beckn\Core\Block\Adminhtml\Persons\Form $block
+ */
+?>
+<?php
+$model = $block->getPersonDetails();
+?>
+<div class="price_policy_container">
+    <div class="page-main-actions">
+        <div class="page-actions" data-ui-id="page-actions-toolbar-content-header">
+            <div class="page-actions-inner" data-title="Edit Order Item ">
+                <div class="page-actions-buttons">
+                    <button id="save_item" title="Save" type="button" class="action- scalable primary">
+                        <span><?= /* @escapeNotVerified */ __('Save') ?></span>
+                    </button>
+                </div>
+                <?php if($model->getEntityId()!=""): ?>
+                    <div class="page-actions-buttons">
+                        <button id="person_details_delete" title="Delete" type="button" class="action- scalable primary " data-ui-id="add-order-item-back-button">
+                            <span><?= /* @escapeNotVerified */ __('Delete') ?></span>
+                        </button>
+                    </div>
+                <?php endif; ?>
+                <div class="page-actions-buttons">
+                    <button id="back" title="Back" type="button" class="action-default scalable back" onclick="setLocation('<?= /* @escapeNotVerified */ $this->getUrl('beckn/persons/index') ?>')" data-ui-id="add-order-item-back-button">
+                        <span><?= /* @escapeNotVerified */ __('Back') ?></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="page:main-container" class="page-columns">
+        <div class="admin__old">
+            <div id="container" class="main-col">
+                <form action="<?= $block->getFormAction() ?>" method="post" id='person_details_form' enctype="multipart/form-data">
+                    <input name="form_key" type="hidden" value="<?= /* @escapeNotVerified */ $block->getFormKey(); ?>">
+                    <?php if($model->getEntityId()!=""): ?>
+                        <input name="entity_id" type="hidden" value="<?= /* @escapeNotVerified */ $model->getEntityId(); ?>">
+                    <?php endif; ?>
+                    <div class="admin__field field col-3 main_col _required">
+                        <label class="label admin__field-label" for="name">
+                            <span><?= /* @escapeNotVerified */ __('Person Name') ?></span>
+                        </label>
+                        <div class="admin__field-control control">
+                            <input id="name" name="name" title="Person Name" class="input-text admin__control-text required-entry required-entry _required" type="text" aria-required="true" value="<?= $model->getName() ?>">
+                        </div>
+                    </div>
+                    <div class="admin__field field col-3 main_col _required">
+                        <label class="label admin__field-label" for="gender">
+                            <span><?= /* @escapeNotVerified */ __('Gender') ?></span>
+                        </label>
+                        <div class="admin__field-control control">
+                            <select name="gender" id="gender" class="admin__control-select">
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Others">Others</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="admin__field field col-3 main_col _required">
+                        <label class="label admin__field-label" for="image">
+                            <span><?= /* @escapeNotVerified */ __('Image') ?></span>
+                        </label>
+                        <div class="admin__field-control control">
+                            <input id="image" name="image" title="Image" class="input-text admin__control-text required-entry required-entry _required" type="file" aria-required="true" value="<?= $model->getImage() ?>">
+                        </div>
+                    </div>
+                    <div class="admin__field field col-3 main_col _required">
+                        <label class="label admin__field-label" for="cred">
+                            <span><?= /* @escapeNotVerified */ __('Cred') ?></span>
+                        </label>
+                        <div class="admin__field-control control">
+                            <input id="cred" name="cred" title="Cred" class="input-text admin__control-text required-entry required-entry _required" type="text" aria-required="true" value="<?= $model->getCred() ?>">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    require([
+        'jquery',
+        'Magento_Ui/js/modal/confirm'
+    ], function ($, confirmation) {
+        $('#save_item').click(function(){
+            $("form#person_details_form").submit();
+        });
+        $('#person_details_delete').on('click', function (e){
+            e.preventDefault();
+            confirmation({
+                title: 'Delete',
+                content: 'Do you want to delete this record?',
+                actions: {
+                    confirm: function () {
+                        setLocation('<?= /* @escapeNotVerified */ $this->getUrl('beckn/location/delete', ["id" => $model->getEntityId()]) ?>');
+                    },
+                    cancel: function () {
+                        return false;
+                    }
+                }
+            });
+        });
+    });
+</script>
+<script type="text/x-magento-init">
+    {
+        "#person_details_form": {
+            "validation": {}
+        }
+    }
+</script>
+<style type="text/css">
+    .price_policy_container .main_col {width: 50%;margin: 15px auto;}
+    .each_policy .col-6, .each_headers .col-6 {width: 50%;padding: 10px;}
+    .each_method {width: 20%;margin-top: 10px;}
+    .method_wraper {display: flex;}
+    .each_policy, .each_headers {display: flex;position: relative;}
+    .each_policy .col-6:first-child, .each_headers .col-6:first-child {padding-left: 0px;}
+    .each_policy .col-6:last-child, .each_headers .col-6:last-child {padding-right: 0px;}
+    .remove_each_policy, .remove_each_policy_header {position: absolute;right: -75px;top: 28px;}
+</style>

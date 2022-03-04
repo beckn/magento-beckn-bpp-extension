@@ -14,6 +14,7 @@ use Psr\Log\LoggerInterface;
 use Magento\Framework\Webapi\Exception;
 use Magento\Framework\Search\Search as MagentoCoreSearch;
 use Magento\Framework\Api\Search\SearchCriteriaInterfaceFactory as SearchCriteriaInterfaceFactory;
+use Beckn\Core\Model\ProductFlagReferenceFactory;
 
 /**
  * Class SearchRepository
@@ -50,10 +51,16 @@ class SearchRepository implements \Beckn\Search\Api\SearchRepositoryInterface
      * @var SearchCriteriaInterfaceFactory
      */
     protected $_searchCriteriaInterfaceFactory;
+
     /**
      * @var DataObjectHelper
      */
     protected $_dataObjectHelper;
+
+    /**
+     * @var ProductFlagReferenceFactory
+     */
+    protected $_productFlagReferenceFactory;
 
     /**
      * SearchRepository constructor.
@@ -64,6 +71,7 @@ class SearchRepository implements \Beckn\Search\Api\SearchRepositoryInterface
      * @param MagentoCoreSearch $magentoCoreSearch
      * @param SearchCriteriaInterfaceFactory $searchCriteriaInterfaceFactory
      * @param DataObjectHelper $dataObjectHelper
+     * @param ProductFlagReferenceFactory $productFlagReferenceFactory
      */
     public function __construct(
         Helper $helper,
@@ -72,7 +80,8 @@ class SearchRepository implements \Beckn\Search\Api\SearchRepositoryInterface
         CategoryFactory $categoryFactory,
         MagentoCoreSearch $magentoCoreSearch,
         SearchCriteriaInterfaceFactory $searchCriteriaInterfaceFactory,
-        DataObjectHelper $dataObjectHelper
+        DataObjectHelper $dataObjectHelper,
+        ProductFlagReferenceFactory $productFlagReferenceFactory
     )
     {
         $this->_helper = $helper;
@@ -82,7 +91,7 @@ class SearchRepository implements \Beckn\Search\Api\SearchRepositoryInterface
         $this->_magentoCoreSearch = $magentoCoreSearch;
         $this->_searchCriteriaInterfaceFactory = $searchCriteriaInterfaceFactory;
         $this->_dataObjectHelper = $dataObjectHelper;
-        $this->_dataObjectHelper = $dataObjectHelper;
+        $this->_productFlagReferenceFactory = $productFlagReferenceFactory;
     }
 
     /**
@@ -107,6 +116,7 @@ class SearchRepository implements \Beckn\Search\Api\SearchRepositoryInterface
                 $acknowledge["message"]["ack"]["status"] = Helper::NACK;
                 $acknowledge["error"] = $errorAcknowledge;
             }
+            $this->_helper->apiResponseEvent($context, $acknowledge);
             echo json_encode($acknowledge);
             session_write_close();
             fastcgi_finish_request();
@@ -235,7 +245,7 @@ class SearchRepository implements \Beckn\Search\Api\SearchRepositoryInterface
             ],
             "price" => [
                 "currency" => $this->_helper->getCurrentCurrencyCode(),
-                "value" => $product->getFinalPrice()
+                "value" => $this->_helper->formatPrice($product->getFinalPrice())
             ],
             "matched" => true,
         ];
@@ -256,10 +266,21 @@ class SearchRepository implements \Beckn\Search\Api\SearchRepositoryInterface
                 ]
             ];
         }
+
+        $productReferance = $this->getAdditionalTags($product->getId());
+        if(!empty($productReferance) && !empty($productReferance["product_list_id"]) && !empty($productReferance["product_list_id"])){
+            $productData["tags"]["product_list_id"] = $productReferance["product_list_id"];
+            $productData["tags"]["blockhash"] = $productReferance["blockhash"];
+        }
+        else{
+            $productData["tags"]["product_list_id"] = "";
+            $productData["tags"]["blockhash"] = "";
+        }
+
         if ($product->getPricePolicyBpp() != "") {
             $price = $this->_helper->getPriceFromPolicy($product->getPricePolicyBpp());
             if ($price != "") {
-                $productData["price"]["value"] = $price;
+                $productData["price"]["value"] = $this->_helper->formatPrice($price);
             }
         }
         $productStoreId = $product->getProductStoreBpp();
@@ -270,11 +291,32 @@ class SearchRepository implements \Beckn\Search\Api\SearchRepositoryInterface
                 $productData["location_id"] = $locationId;
             }
         }
+
         return [
             "item" => $productData,
             "id" => $productData["id"],
             "price" => $productData["price"]["value"],
             "store_id" => $productStoreId
         ];
+    }
+
+    /**
+     * @param $productId
+     * @return array|bool
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function getAdditionalTags($productId){
+        /**
+         * @var \Beckn\Core\Model\ProductFlagReference $productFlag
+         */
+        $productFlag = $this->_productFlagReferenceFactory->create();
+        $productReferance = $productFlag->productLoadById($productId, true);
+        if(!empty($productReferance)){
+            return [
+                "product_list_id" => $productReferance["product_list_id"],
+                "blockhash" => $productReferance["blockhash"]
+            ];
+        }
+        return false;
     }
 }

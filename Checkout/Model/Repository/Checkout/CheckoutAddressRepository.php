@@ -98,6 +98,7 @@ class CheckoutAddressRepository implements \Beckn\Checkout\Api\CheckoutAddressRe
                 $acknowledge["message"]["ack"]["status"] = Helper::NACK;
                 $acknowledge["error"] = $errorAcknowledge;
             }
+            $this->_helper->apiResponseEvent($context, $acknowledge);
             echo json_encode($acknowledge);
             session_write_close();
             fastcgi_finish_request();

@@ -242,7 +242,7 @@ class ManageCart
 //                    ],
                     "price" => [
                         "currency" => $quote->getQuoteCurrencyCode(),
-                        "value" => $eachItem->getPrice()
+                        "value" => $this->_helper->formatPrice($eachItem->getPrice())
                     ]
                 ];
                 if($type=="select"){
@@ -321,7 +321,7 @@ class ManageCart
                     //"ref_id" => $eachItem->getSku(),
                     "price" => [
                         "currency" => $quote->getQuoteCurrencyCode(),
-                        "value" => $eachItem->getRowTotal(),
+                        "value" => $this->_helper->formatPrice($eachItem->getRowTotal()),
                     ]
                 ];
             }
@@ -340,7 +340,7 @@ class ManageCart
                             //"ref_id" => "",
                             "price" => [
                                 "currency" => $quote->getQuoteCurrencyCode(),
-                                "value" => $totalSegment->getValue(),
+                                "value" => $this->_helper->formatPrice($totalSegment->getValue()),
                             ]
                         ];
                     }
@@ -348,7 +348,7 @@ class ManageCart
             }
             $priceBreakUp["price"] = [
                 "currency" => $quote->getQuoteCurrencyCode(),
-                "value" => $quote->getGrandTotal()
+                "value" => $this->_helper->formatPrice($quote->getGrandTotal())
             ];
             $priceBreakUp["breakup"] = $totalsBreakup;
             return $priceBreakUp;
@@ -403,7 +403,7 @@ class ManageCart
                 //"ref_id" => $eachItem->getSku(),
                 "price" => [
                     "currency" => $order->getOrderCurrencyCode(),
-                    "value" => $eachItem->getRowTotal(),
+                    "value" => $this->_helper->formatPrice($eachItem->getRowTotal()),
                 ]
             ];
         }
@@ -423,14 +423,14 @@ class ManageCart
                     //"ref_id" => "",
                     "price" => [
                         "currency" => $order->getOrderCurrencyCode(),
-                        "value" => $total->getValue(),
+                        "value" => $this->_helper->formatPrice($total->getValue()),
                     ]
                 ];
             }
         }
         $priceBreakUp["price"] = [
             "currency" => $order->getOrderCurrencyCode(),
-            "value" => $order->getGrandTotal()
+            "value" => $this->_helper->formatPrice($order->getGrandTotal())
         ];
         $priceBreakUp["breakup"] = $totalsBreakup;
         return $priceBreakUp;

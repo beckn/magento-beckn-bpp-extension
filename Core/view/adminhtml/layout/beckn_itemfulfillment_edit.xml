@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!--
+/**
+* @author Indglobal
+*/
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="admin-1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="content">
+            <block class="Beckn\Core\Block\Adminhtml\Itemfulfillment\Form" name="add_itemfulfillment_options"
+                   template="Beckn_Core::itemfulfillment/form.phtml">
+                <container name="item.fulfillment.times" as="item_fulfillment_times"/>
+            </block>
+        </referenceContainer>
+        <referenceContainer name="item.fulfillment.times">
+            <block class="Beckn\Core\Block\Adminhtml\Itemfulfillment\Form" name="fulfillment_times"
+                   template="Beckn_Core::itemfulfillment/fulfillment_times.phtml" cacheable="false"/>
+        </referenceContainer>
+    </body>
+</page>
