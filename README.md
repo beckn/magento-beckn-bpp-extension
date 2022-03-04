@@ -9,6 +9,8 @@
 |-------|----------|--------|------|-------------|---|-------------|----|----
 |0.1.1 |25 Jan 2022|18 Feb 2022|In progress| |[Task List](https://github.com/beckn/magento-beckn-bpp-extension/issues?q=milestone%3Av0.1.1+)|[Wiki](https://github.com/beckn/beckn-in-a-box/wiki)|[Codebase](https://github.com/beckn/magento-beckn-bpp-extension)|[Logs](https://github.com/beckn/magento-beckn-bpp-extension/commits/main)
 
+> **Disclaimer** This project is still in Beta phase and unstable for Production use.
+
 
 ## Beckn Magento 2 Extension
 Beckn Magento 2 Extension. It contains 5 module to connect over Beckn network. The extension uses 0.9.3 version of the Beckn Protocol Core Specification.
