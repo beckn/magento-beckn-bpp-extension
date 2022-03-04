@@ -7,7 +7,7 @@
 ## Work queue
 |Release|Start Date|End Date|Status|Delay in Days|REQ|Documentation|Code|Logs
 |-------|----------|--------|------|-------------|---|-------------|----|----
-|0.1.1 |25 Jan 2022|18 Feb 2022|In progress| |[Task List](https://github.com/beckn/magento-beckn-bpp-extension/issues?q=milestone%3Av0.1.1+)|[Wiki](https://github.com/beckn/beckn-in-a-box/wiki)|[Codebase](https://github.com/beckn/magento-beckn-bpp-extension)|[Logs](https://github.com/beckn/magento-beckn-bpp-extension/commits/main)
+|0.1.1 |25 Jan 2022|18 Feb 2022|Completed| |[Task List](https://github.com/beckn/magento-beckn-bpp-extension/issues?q=milestone%3Av0.1.1+)|[Wiki](https://github.com/beckn/beckn-in-a-box/wiki)|[Codebase](https://github.com/beckn/magento-beckn-bpp-extension)|[Logs](https://github.com/beckn/magento-beckn-bpp-extension/commits/main)
 
 > **Disclaimer** This project is still in Beta phase and unstable for Production use.
 
