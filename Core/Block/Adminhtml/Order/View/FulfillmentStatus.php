@@ -43,18 +43,17 @@ class FulfillmentStatus extends \Magento\Backend\Block\Template
      */
     public function getAllFulfillmentStatus()
     {
-        $fulfillment = $this->_helper->getConfigData(Helper::XML_PATH_FULFILLMENT_STATUS);
-        $fulfillmentData = json_decode($fulfillment, true);
+        $fulfillmentData = $this->_helper->getAllFulfilmentStatus();
         $fulfillmentStatus = [];
-//        $fulfillmentStatus[] = [
-//            "status_code" => "",
-//            "status_message" => __("Select Status"),
-//            "parent_status" => "",
-//        ];
+        $fulfillmentStatus[] = [
+            "status_code" => "",
+            "status_message" => __("Select Status"),
+            "parent_status" => "",
+        ];
         if(!empty($fulfillmentData)){
-            foreach ($fulfillmentData as $item){
+            foreach ($fulfillmentData as $key => $item){
                 $fulfillmentStatus[] = [
-                    "status_code" => $item['status_code'],
+                    "status_code" => $key,
                     "status_message" => $item['status_message'],
                     "parent_status" => $item['parent_status'],
                 ];

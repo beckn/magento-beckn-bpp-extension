@@ -217,12 +217,13 @@ class ManageOrder
                     ],
                     "quantity" => [
                         "selected" => [
-                            "count" => $eachItem->getQtyOrdered()
+                            "count" => $this->_helper->formatQty($eachItem->getQtyOrdered())
                         ]
                     ],
                     "descriptor" => [
                         "code" => $eachItem->getSku(),
-                        "name" => $eachItem->getName()
+                        "name" => $eachItem->getName(),
+                        "images" => $this->_helper->getProductMediaGallery($eachItem->getSku()),
                     ]
                 ];
             }

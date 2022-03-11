@@ -153,6 +153,7 @@ class SearchRepository implements \Beckn\Search\Api\SearchRepositoryInterface
          * @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection
          */
         $filterStoreId = $this->_helper->getAllStoreIds($message);
+        $this->_logger->info("all store ids => ".json_encode($filterStoreId));
         if (!empty($filterStoreId)) {
             $collection = $this->_productCollectionFactory->create();
             $collection->addAttributeToSelect('*');
@@ -161,8 +162,9 @@ class SearchRepository implements \Beckn\Search\Api\SearchRepositoryInterface
             $collection->addAttributeToFilter('status', Status::STATUS_ENABLED);
             if (isset($message["intent"]["item"]["descriptor"]["name"]) && !empty($message["intent"]["item"]["descriptor"]["name"])) {
                 $searchQuery = $message["intent"]["item"]["descriptor"]["name"];
-                $productIds = $this->getDefaultMagentoSearch($searchQuery);
-                $collection->addAttributeToFilter('entity_id', ["IN", $productIds]);
+                //$productIds = $this->getDefaultMagentoSearch($searchQuery);
+                //$collection->addAttributeToFilter('entity_id', ["IN", $productIds]);
+                $collection->addAttributeToFilter('name', ['like' => '%'.$searchQuery.'%']);
             }
             $collection = $this->_helper->addCondition($message, $collection);
         }
@@ -170,7 +172,8 @@ class SearchRepository implements \Beckn\Search\Api\SearchRepositoryInterface
         $allItems = [];
         $priceData = [];
         $availableStore = [];
-        if (!empty($collection)) {
+        if ($collection->getSize()) {
+            $this->_logger->info("I am herer");
             foreach ($collection as $_collection) {
                 $prepareProduct = $this->prepareProduct($_collection, $context, $message);
                 $allItems[] = $prepareProduct["item"];
@@ -178,11 +181,13 @@ class SearchRepository implements \Beckn\Search\Api\SearchRepositoryInterface
                 $availableStore[] = $prepareProduct["store_id"];
             }
         }
+        $this->_logger->info("all items 1 => ".json_encode($allItems));
         if (isset($message["intent"]["item"]["price"]["minimum_value"])) {
             $minValue = $message["intent"]["item"]["price"]["minimum_value"];
             $maxValue = $message["intent"]["item"]["price"]["maximum_value"];
             $allItems = $this->_helper->addPriceFilter($allItems, $priceData, $minValue, $maxValue);
         }
+        $this->_logger->info("all items 2 => ".json_encode($allItems));
         if (!empty($allItems)) {
             $provider = $this->_helper->getProvidersDetails($allItems, array_unique($availableStore));
             $response["context"] = $this->_helper->getContext($context);
@@ -237,6 +242,7 @@ class SearchRepository implements \Beckn\Search\Api\SearchRepositoryInterface
      */
     private function prepareProduct(Product $product, array $context, array $message)
     {
+        $this->_logger->info("Product id => ".$product->getId());
         $productData = [
             "id" => $product->getSku(),
             "descriptor" => [
@@ -271,10 +277,6 @@ class SearchRepository implements \Beckn\Search\Api\SearchRepositoryInterface
         if(!empty($productReferance) && !empty($productReferance["product_list_id"]) && !empty($productReferance["product_list_id"])){
             $productData["tags"]["product_list_id"] = $productReferance["product_list_id"];
             $productData["tags"]["blockhash"] = $productReferance["blockhash"];
-        }
-        else{
-            $productData["tags"]["product_list_id"] = "";
-            $productData["tags"]["blockhash"] = "";
         }
 
         if ($product->getPricePolicyBpp() != "") {

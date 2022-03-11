@@ -60,8 +60,8 @@ class Data extends AbstractHelper
     const KEY_STATUS = "status";
     const ON_SUPPORT = "on_support";
     const KEY_SUPPORT = "support";
-    //const ON_CANCEL = "on_cancel";
-    const ON_CANCEL = "cancellation_reasons";
+    const ON_CANCEL = "on_cancel";
+    const ON_CANCEL_REASONS = "cancellation_reasons";
     const ON_UPDATE = "on_update";
     const KEY_UPDATE = "update";
     const ON_TRACK = "on_track";
@@ -97,6 +97,8 @@ class Data extends AbstractHelper
     const AUTHORIZATION_KEY = 'Authorization';
     const PROXY_AUTHORIZATION_KEY = 'Proxy-Authorization';
 
+    const CORD_BASE_URL = 'https://dev.studio.dhiway.com/api/v1/cord/';
+
     const PACKING_ORDER = "PACKING-ORDER";
     const SEARCHING_FOR_AGENT = "SEARCHING-FOR-AGENT";
     const ASSIGNED_AGENT = "ASSIGNED-AGENT";
@@ -128,17 +130,19 @@ class Data extends AbstractHelper
     ];
 
     const ORDER_STATUS_LIST = [
+        "new" => 'PENDING-CONFIRMATION',
         "pending" => 'PENDING-CONFIRMATION',
         "processing" => 'CONFIRMED',
         "complete" => 'COMPLETE',
         "cancelled" => 'CANCELLED',
+        "canceled" => 'CANCELLED',
     ];
 
     const TRACKING_ACTIVE = "active";
     const TRACKING_INACTIVE = "inactive";
 
     /*
-     * ALL Config XML PATH
+ * ALL Config XML PATH
      */
     const XML_PATH_SUBSCRIBER_ID = "subscriber_config/subscriber/subscriber_id";
     const XML_PATH_SUBSCRIBER_INDUSTRY_DOMAIN = "subscriber_config/subscriber/industry_domain";
@@ -261,7 +265,6 @@ class Data extends AbstractHelper
      * @var StoreRepositoryInterface
      */
     protected $_storeRepository;
-
     /**
      * @var ProductRepository
      */
@@ -283,7 +286,6 @@ class Data extends AbstractHelper
      * @param Pool $cacheFrontendPool
      * @param BecknLookupFactory $becknLookupFactory
      * @param \Magento\Framework\Webapi\Request $request
-     * @param \Magento\Framework\Webapi\Rest\Request $restRequest
      * @param DigitalSignature $digitalSignature
      * @param PricePolicyFactory $pricePolicyFactory
      * @param LocationPolicyFactory $locationPolicyFactory
@@ -393,16 +395,22 @@ class Data extends AbstractHelper
     /**
      * @param $apiUrl
      * @param $postData
+     * @param $type
      * @return mixed
      */
     public function sendResponse($apiUrl, $postData)
     {
+        $this->_logger->info("Response Data previous.");
+        $transactionId = $postData["context"]["transaction_id"] ?? "";
+        $entityType = $postData["context"]["action"] ?? "";
+        $this->_logger->info(json_encode($postData));
         //array_walk_recursive($postData,function(&$item){$item=strval($item);});
         $postBody = json_encode($postData, JSON_UNESCAPED_SLASHES);
         $authorization = $this->_digitalSignature->createAuthorization($postBody);
         if ($authorization["success"] == true) {
             $authHeader = $authorization["auth"];
             $this->_curl->addHeader('Authorization', $authHeader);
+            $this->_logger->info("BPP authorization => ".$authHeader);
         }
         $this->_curl->addHeader('content-type', 'application/json');
         $this->_curl->post($apiUrl, $postBody);
@@ -1262,8 +1270,11 @@ class Data extends AbstractHelper
             $headers = apache_request_headers();
             $body = $this->_restRequest->getContent();
             $auth = $this->_request->getHeader(self::AUTHORIZATION_KEY);
+            $this->_logger->info("Authorization => ".$auth);
+            $this->_logger->info("All header => ".json_encode($headers));
             //$proxyAuth = $this->_request->getHeader(self::PROXY_AUTHORIZATION_KEY);
             $proxyAuth = $headers[self::PROXY_AUTHORIZATION_KEY] ?? "";
+            $this->_logger->info("Proxy Authorization => ".$proxyAuth);
             if (!empty($auth)) {
                 $authStatus = $this->_digitalSignature->validateAuth($auth, $body);
             }
@@ -1506,6 +1517,24 @@ class Data extends AbstractHelper
     }
 
     /**
+     * @param array $postData
+     * @return bool
+     */
+    public function callProductDelegate(array $postData){
+        $apiUrl = self::CORD_BASE_URL."item_delegate";
+        $this->_curl->addHeader("Content-Type", "application/json");
+        $this->_curl->post($apiUrl, json_encode($postData));
+        $body = $this->_curl->getBody();
+        $this->_logger->info("Product Delegate API url => ".$apiUrl);
+        $this->_logger->info("Product Delegate post data => ".json_encode($postData));
+        $this->_logger->info("Product Delegate api response => ".$body);
+        if($this->_curl->getStatus()==200){
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * @param $order
      * @return bool
      */
@@ -1548,13 +1577,6 @@ class Data extends AbstractHelper
     }
 
     /**
-     * @return array
-     */
-    public function getRestApiData(){
-        return $this->_restRequest->getBodyParams();
-    }
-
-    /**
      * @param $price
      * @return string
      */
@@ -1576,6 +1598,7 @@ class Data extends AbstractHelper
      * @return string
      */
     public function getOrderStatusByCode($statusCode){
+        $this->_logger->info("status code => ".$statusCode);
         return self::ORDER_STATUS_LIST[$statusCode] ?? "";
     }
 }

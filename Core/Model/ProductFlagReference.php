@@ -158,20 +158,43 @@ class ProductFlagReference extends \Magento\Framework\Model\AbstractModel implem
      * @return bool|mixed
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function productLoadById($productId, $withData=false)
+    public function productLoadById($productId, $withData = false)
     {
         $connection = $this->_getResource()->getConnection();
         $tableName = $connection->getTableName(UpgradeSchema::TABLE_BECKN_FLAG_REFERENCE);
         $select = $connection->select()->from($tableName)->where('product_id = :product_id');
         $bind = [':product_id' => $productId];
         $data = $connection->fetchRow($select, $bind);
-        if($withData){
+        if ($withData) {
             return $data;
-        }
-        else{
-            if(!empty($data)){
+        } else {
+            if (!empty($data)) {
                 return false;
-            }else{
+            } else {
+                return true;
+            }
+        }
+    }
+
+    /**
+     * @param $productSku
+     * @param bool $withData
+     * @return bool|mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function productCheckBySku($productSku, $withData = false)
+    {
+        $connection = $this->_getResource()->getConnection();
+        $tableName = $connection->getTableName(UpgradeSchema::TABLE_BECKN_FLAG_REFERENCE);
+        $select = $connection->select()->from($tableName)->where('product_sku = :sku');
+        $bind = [':sku' => $productSku];
+        $data = $connection->fetchRow($select, $bind);
+        if ($withData) {
+            return $data;
+        } else {
+            if (!empty($data)) {
+                return false;
+            } else {
                 return true;
             }
         }
@@ -183,20 +206,19 @@ class ProductFlagReference extends \Magento\Framework\Model\AbstractModel implem
      * @return bool|mixed
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function productLoadBySku($sku, $withData=false)
+    public function productLoadBySku($sku, $withData = false)
     {
         $connection = $this->_getResource()->getConnection();
         $tableName = $connection->getTableName(UpgradeSchema::TABLE_BECKN_FLAG_REFERENCE);
         $select = $connection->select()->from($tableName)->where('product_sku = :sku');
         $bind = [':sku' => $sku];
         $data = $connection->fetchRow($select, $bind);
-        if($withData){
+        if ($withData) {
             return $data;
-        }
-        else{
-            if(!empty($data)){
+        } else {
+            if (!empty($data)) {
                 return true;
-            }else{
+            } else {
                 return false;
             }
         }

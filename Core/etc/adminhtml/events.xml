@@ -6,4 +6,10 @@
     <event name="sales_order_fulfillment_save_after">
         <observer name="magento_order_fulfillment_save" instance="Beckn\Core\Observer\OrderOnStatus" />
     </event>
+    <event name="catalog_product_save_after">
+        <observer name="product_flag_reference" instance="Beckn\Core\Observer\Adminhtml\Product" />
+    </event>
+    <event name="catalog_product_delete_after">
+        <observer name="test_name" instance="Beckn\Core\Observer\Adminhtml\ProductDelete" />
+    </event>
 </config>

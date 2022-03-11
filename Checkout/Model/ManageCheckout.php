@@ -409,7 +409,6 @@ class ManageCheckout
         $quoteMaskData = $this->_becknQuoteMask->loadByTransactionId($transactionId);
         if (!empty($quoteMaskData)) {
             $quoteMask = $this->_becknQuoteMask->load($quoteMaskData["entity_id"]);
-            $quoteMask->setRequestBody(json_encode($this->_helper->getRestApiData()));
             $quoteMask->setStatus(0)->save();
         }
         return false;
@@ -516,5 +515,42 @@ class ManageCheckout
             $billingAddress->setData("beckn_customer_address", json_encode($becknBillingAddress));
             $billingAddress->save();
         }
+    }
+
+
+    /**
+     * @param CartInterface $quote
+     * @return bool
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
+     */
+    public function itemDelegate(CartInterface $quote){
+        $this->_helper->logData("Item delegate call");
+        $allItems = $quote->getAllVisibleItems();
+        /**
+         * @var \Magento\Quote\Model\Quote\Item $_item
+         */
+        foreach ($allItems as $_item){
+            $product = $_item->getProduct();
+            $productFlag = $this->_productFlagReference->productLoadBySku($product->getSku(), true);
+            $postData = [
+                "identifier" => $this->_helper->getConfigData(Helper::XML_PATH_SUBSCRIBER_ID),
+                "product" => [
+                    "name" => $product->getName(),
+                    "sku" => $product->getSku(),
+                ],
+                "selling_price" => $product->getPrice(),
+                "seller_name" => $this->_helper->getConfigData(Helper::XML_PATH_BUSINESS_NAME),
+                "quantity" => $_item->getQty(),
+                "delegateId" => $this->_helper->getSubscriberIdFromAuth(),
+                "createId" => $productFlag['product_list_id']
+            ];
+            $curlResponse = $this->_helper->callProductDelegate($postData);
+            if(!$curlResponse){
+                return false;
+                break;
+            }
+        }
+        return true;
     }
 }

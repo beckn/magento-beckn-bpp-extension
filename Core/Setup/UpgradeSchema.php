@@ -466,27 +466,27 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $connection = $installer->getConnection();
             if ($connection->tableColumnExists(self::TABLE_BECKN_FLAG_REFERENCE, 'product_list_id') === false) {
                 $installer->getConnection()
-                    ->addColumn(
-                        $installer->getTable(self::TABLE_BECKN_FLAG_REFERENCE), 'product_list_id', [
-                            'type' => Table::TYPE_TEXT,
-                            'nullable' => true,
-                            'size' => 255,
-                            'after' => 'flag',
-                            'default' => null,
-                            'comment' => 'Product List Id',
-                        ]
-                    );
+                ->addColumn(
+                    $installer->getTable(self::TABLE_BECKN_FLAG_REFERENCE), 'product_list_id', [
+                        'type' => Table::TYPE_TEXT,
+                        'nullable' => true,
+                        'size' => 255,
+                        'after' => 'flag',
+                        'default' => null,
+                        'comment' => 'Product List Id',
+                    ]
+                );
                 $installer->getConnection()
-                    ->addColumn(
-                        $installer->getTable(self::TABLE_BECKN_FLAG_REFERENCE), 'blockhash', [
-                            'type' => Table::TYPE_TEXT,
-                            'nullable' => true,
-                            'size' => 255,
-                            'after' => 'product_list_id',
-                            'default' => null,
-                            'comment' => 'Blockhash',
-                        ]
-                    );
+                ->addColumn(
+                    $installer->getTable(self::TABLE_BECKN_FLAG_REFERENCE), 'blockhash', [
+                        'type' => Table::TYPE_TEXT,
+                        'nullable' => true,
+                        'size' => 255,
+                        'after' => 'product_list_id',
+                        'default' => null,
+                        'comment' => 'Blockhash',
+                    ]
+                );
             }
             $installer->endSetup();
         }

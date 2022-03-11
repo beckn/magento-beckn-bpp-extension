@@ -58,7 +58,7 @@ class OrderOnStatus implements ObserverInterface
                 $requestBody = json_decode($maskData["request_body"], true);
                 if(is_array($requestBody)){
                     $context = $requestBody["context"];
-                    $context["action"] = Helper::KEY_STATUS;
+                    $context["action"] = "status";
                     $onStatusResponse["context"] = $this->_helper->getContext($context);
                     $onStatusResponse["message_id"] = $this->_helper->generateMessageId();
                     $apiUrl = $this->_helper->getBapUri(Helper::ON_STATUS, $context);

@@ -36,22 +36,22 @@ class EventType implements \Magento\Framework\Data\OptionSourceInterface
     public static function getOptionArray()
     {
         return [
-            Helper::KEY_SEARCH => __("Search"),
-            Helper::ON_SEARCH => __("On Search"),
-            Helper::KEY_SELECT => __("Select"),
-            Helper::ON_SELECT => __("On Select"),
-            Helper::KEY_INIT => __("Init"),
-            Helper::ON_INIT => __("On Init"),
-            Helper::KEY_CONFIRM => __("Confirm"),
-            Helper::ON_CONFIRM => __("On Confirm"),
-            Helper::KEY_STATUS => __("Status"),
-            Helper::ON_STATUS => __("On Status"),
-            Helper::KEY_SUPPORT => __("Support"),
-            Helper::ON_SUPPORT => __("On Support"),
-            Helper::KEY_UPDATE => __("Update"),
-            Helper::ON_UPDATE => __("On Update"),
-            Helper::KEY_TRACK => __("Track"),
-            Helper::ON_TRACK => __("On Track"),
+            Helper::KEY_SEARCH => __("search"),
+            Helper::ON_SEARCH => __("on_search"),
+            Helper::KEY_SELECT => __("select"),
+            Helper::ON_SELECT => __("on_select"),
+            Helper::KEY_INIT => __("init"),
+            Helper::ON_INIT => __("on_init"),
+            Helper::KEY_CONFIRM => __("confirm"),
+            Helper::ON_CONFIRM => __("on_confirm"),
+            Helper::KEY_STATUS => __("status"),
+            Helper::ON_STATUS => __("on_status"),
+            Helper::KEY_SUPPORT => __("support"),
+            Helper::ON_SUPPORT => __("on_support"),
+            Helper::KEY_UPDATE => __("update"),
+            Helper::ON_UPDATE => __("on_update"),
+            Helper::KEY_TRACK => __("track"),
+            Helper::ON_TRACK => __("on_track"),
         ];
     }
 

@@ -187,22 +187,22 @@
                 </item>
             </argument>
         </column>
-        <!--        <column name="header_authorization">-->
-        <!--            <argument name="data" xsi:type="array">-->
-        <!--                <item name="config" xsi:type="array">-->
-        <!--                    <item name="filter" xsi:type="string">text</item>-->
-        <!--                    <item name="label" xsi:type="string" translate="true">Authorization</item>-->
-        <!--                </item>-->
-        <!--            </argument>-->
-        <!--        </column>-->
-        <!--        <column name="proxy_header_authorization">-->
-        <!--            <argument name="data" xsi:type="array">-->
-        <!--                <item name="config" xsi:type="array">-->
-        <!--                    <item name="filter" xsi:type="string">text</item>-->
-        <!--                    <item name="label" xsi:type="string" translate="true">Proxy Authorization</item>-->
-        <!--                </item>-->
-        <!--            </argument>-->
-        <!--        </column>-->
+<!--        <column name="header_authorization">-->
+<!--            <argument name="data" xsi:type="array">-->
+<!--                <item name="config" xsi:type="array">-->
+<!--                    <item name="filter" xsi:type="string">text</item>-->
+<!--                    <item name="label" xsi:type="string" translate="true">Authorization</item>-->
+<!--                </item>-->
+<!--            </argument>-->
+<!--        </column>-->
+<!--        <column name="proxy_header_authorization">-->
+<!--            <argument name="data" xsi:type="array">-->
+<!--                <item name="config" xsi:type="array">-->
+<!--                    <item name="filter" xsi:type="string">text</item>-->
+<!--                    <item name="label" xsi:type="string" translate="true">Proxy Authorization</item>-->
+<!--                </item>-->
+<!--            </argument>-->
+<!--        </column>-->
         <column name="event_data">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
@@ -212,23 +212,23 @@
                 </item>
             </argument>
         </column>
-        <!--        <column name="event_data" class="Beckn\Core\Ui\Component\Listing\Column\EventData">-->
-        <!--            <argument name="data" xsi:type="array">-->
-        <!--                <item name="config" xsi:type="array">-->
-        <!--                    <item name="filter" xsi:type="string">text</item>-->
-        <!--                    <item name="label" xsi:type="string" translate="true">Event Data</item>-->
-        <!--                    <item name="sortOrder" xsi:type="number">3</item>-->
-        <!--                </item>-->
-        <!--            </argument>-->
-        <!--        </column>-->
-        <!--        <column name="response_data">-->
-        <!--            <argument name="data" xsi:type="array">-->
-        <!--                <item name="config" xsi:type="array">-->
-        <!--                    <item name="filter" xsi:type="string">text</item>-->
-        <!--                    <item name="label" xsi:type="string" translate="true">Response Data</item>-->
-        <!--                </item>-->
-        <!--            </argument>-->
-        <!--        </column>-->
+<!--        <column name="event_data" class="Beckn\Core\Ui\Component\Listing\Column\EventData">-->
+<!--            <argument name="data" xsi:type="array">-->
+<!--                <item name="config" xsi:type="array">-->
+<!--                    <item name="filter" xsi:type="string">text</item>-->
+<!--                    <item name="label" xsi:type="string" translate="true">Event Data</item>-->
+<!--                    <item name="sortOrder" xsi:type="number">3</item>-->
+<!--                </item>-->
+<!--            </argument>-->
+<!--        </column>-->
+<!--        <column name="response_data">-->
+<!--            <argument name="data" xsi:type="array">-->
+<!--                <item name="config" xsi:type="array">-->
+<!--                    <item name="filter" xsi:type="string">text</item>-->
+<!--                    <item name="label" xsi:type="string" translate="true">Response Data</item>-->
+<!--                </item>-->
+<!--            </argument>-->
+<!--        </column>-->
         <column name="created_at" class="Magento\Ui\Component\Listing\Columns\Date" >
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
