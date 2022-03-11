@@ -20,6 +20,8 @@ class UpgradeData implements UpgradeDataInterface
     const PRICE_POLICY = 'price_policy_'.InstallData::SUFFIX;
     const LOCATION_POLICY = 'location_policy_'.InstallData::SUFFIX;
     const PRODUCT_STORE = 'product_store_'.InstallData::SUFFIX;
+    const PRODUCT_LIST_ID = 'product_list_id_'.InstallData::SUFFIX;
+    const BLOCK_HASH = 'block_hash_'.InstallData::SUFFIX;
 
     /**
      * @var EavSetupFactory
@@ -187,6 +189,79 @@ class UpgradeData implements UpgradeDataInterface
                         'unique' => false,
                         'apply_to' => 'simple,configurable,virtual,downloadable,grouped,bundle',
                         'sort_order' => 60
+                    ]
+                );
+            }
+        }
+        if (version_compare($context->getVersion(), '1.1.9', '<')) {
+            $attribute = $this->_eavConfig->getAttribute(Product::ENTITY, self::PRODUCT_LIST_ID);
+            $attributeCheck = ($attribute && $attribute->getId());
+            if(!$attributeCheck){
+                $eavSetup = $this->_eavSetupFactory->create(['setup' => $setup]);
+                /**
+                 * @var \Magento\Eav\Setup\EavSetup $eavSetup
+                 */
+                $eavSetup->addAttribute(
+                    \Magento\Catalog\Model\Product::ENTITY,
+                    self::PRODUCT_LIST_ID,
+                    [
+                        'group' => 'Beckn Configuration',
+                        'type' => 'text',
+                        'label' => 'Product List Id',
+                        'input' => 'text',
+                        'backend' => '',
+                        'frontend' => '',
+                        'class' => '',
+                        'source' => '',
+                        'global' => \Magento\Eav\Model\Entity\Attribute\ScopedAttributeInterface::SCOPE_GLOBAL,
+                        'visible' => true,
+                        'required' => false,
+                        'user_defined' => true,
+                        'default' => '',
+                        'searchable' => true,
+                        'filterable' => false,
+                        'comparable' => false,
+                        'visible_on_front' => true,
+                        'unique' => false,
+                        'apply_to' => 'simple,configurable,virtual,downloadable,grouped,bundle',
+                        'used_in_product_listing' => true,
+                        'sort_order' => 80
+                    ]
+                );
+            }
+
+            $attribute = $this->_eavConfig->getAttribute(Product::ENTITY, self::BLOCK_HASH);
+            $attributeCheck = ($attribute && $attribute->getId());
+            if(!$attributeCheck){
+                $eavSetup = $this->_eavSetupFactory->create(['setup' => $setup]);
+                /**
+                 * @var \Magento\Eav\Setup\EavSetup $eavSetup
+                 */
+                $eavSetup->addAttribute(
+                    \Magento\Catalog\Model\Product::ENTITY,
+                    self::BLOCK_HASH,
+                    [
+                        'group' => 'Beckn Configuration',
+                        'type' => 'text',
+                        'label' => 'Block Hash',
+                        'input' => 'text',
+                        'backend' => '',
+                        'frontend' => '',
+                        'class' => '',
+                        'source' => '',
+                        'global' => \Magento\Eav\Model\Entity\Attribute\ScopedAttributeInterface::SCOPE_GLOBAL,
+                        'visible' => true,
+                        'required' => false,
+                        'user_defined' => true,
+                        'default' => '',
+                        'searchable' => true,
+                        'filterable' => false,
+                        'comparable' => false,
+                        'visible_on_front' => true,
+                        'unique' => false,
+                        'apply_to' => 'simple,configurable,virtual,downloadable,grouped,bundle',
+                        'used_in_product_listing' => true,
+                        'sort_order' => 100
                     ]
                 );
             }

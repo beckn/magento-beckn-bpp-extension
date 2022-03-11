@@ -517,4 +517,40 @@ class ManageCheckout
             $billingAddress->save();
         }
     }
+
+
+    /**
+     * @param CartInterface $quote
+     * @return bool
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
+     */
+    public function itemDelegate(CartInterface $quote){
+        $allItems = $quote->getAllVisibleItems();
+        /**
+         * @var \Magento\Sales\Model\Order\Item $_item
+         */
+        foreach ($allItems as $_item){
+            $product = $_item->getProduct();
+            $productFlag = $this->_productFlagReference->productLoadById($product->getId(), true);
+            $postData = [
+                "identifier" => $this->_helper->getSubscriberIdFromAuth(),
+                "product" => [
+                    "name" => $product->getName(),
+                    "sku" => $product->getSku(),
+                ],
+                "selling_price" => $product->getPrice(),
+                "seller_name" => $this->_helper->getConfigData(Helper::XML_PATH_BUSINESS_NAME),
+                "quantity" => $this->_stockState->getStockQty($product->getId(), $this->_helper->currentWebsiteId()),
+                "delegateId" => $this->_helper->getConfigData(Helper::XML_PATH_SUBSCRIBER_ID),
+                "createId" => $productFlag['product_list_id']
+            ];
+            $curlResponse = $this->_helper->callProductDelegate($postData);
+            if(!$curlResponse){
+                return false;
+                break;
+            }
+        }
+        return true;
+    }
 }

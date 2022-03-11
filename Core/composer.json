@@ -2,7 +2,7 @@
     "name": "beckn/core",
     "description": "Beckn Core By Indglobal",
     "require": {
-        "php": "7.0",
+        "php": "~7.0.*",
         "magento/magento-composer-installer": "*"
     },
     "type": "magento2-module",

@@ -116,7 +116,7 @@ class CancelRepository implements \Beckn\CancelOrder\Api\CancelRepositoryInterfa
     public function manageCancelReason($context){
         $onCancelReason = [];
         $onCancelReason["context"] = $this->_helper->getContext($context);
-        $apiUrl = $this->_helper->getBapUri(Helper::ON_CANCEL, $context);
+        $apiUrl = $this->_helper->getBapUri(Helper::ON_CANCEL_REASONS, $context);
         $cancelReason = $this->_helper->getCancelReasonOption();
         $onCancelReason["message"]["cancellation_reasons"] = $cancelReason;
         return $this->_helper->sendResponse($apiUrl, $onCancelReason);

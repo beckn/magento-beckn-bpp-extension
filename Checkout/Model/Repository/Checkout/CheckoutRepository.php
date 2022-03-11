@@ -164,7 +164,10 @@ class CheckoutRepository implements \Beckn\Checkout\Api\CheckoutRepositoryInterf
              * @var \Magento\Quote\Api\Data\CartInterface $quote
              */
             $quote = $this->_quoteRepository->getActive($quoteId);
-            //$quote = $this->_quoteRepository->get($quoteId);
+//            if(!$this->_manageCheckout->itemDelegate($quote)){
+//                $onConfirmResponse["error"] = $this->_helper->acknowledgeError(Helper::ERROR_CODE['business_error'], __("Unable to confirm your order"));
+//                return $this->_helper->sendResponse($apiUrl, $onConfirmResponse);
+//            }
             if ($quote->getId() == '') {
                 $onConfirmResponse["error"] = $this->_helper->acknowledgeError("", __("Your cart is empty."));
                 return $this->_helper->sendResponse($apiUrl, $onConfirmResponse);

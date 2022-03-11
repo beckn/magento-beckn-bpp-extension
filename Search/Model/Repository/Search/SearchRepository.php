@@ -161,8 +161,10 @@ class SearchRepository implements \Beckn\Search\Api\SearchRepositoryInterface
             $collection->addAttributeToFilter('status', Status::STATUS_ENABLED);
             if (isset($message["intent"]["item"]["descriptor"]["name"]) && !empty($message["intent"]["item"]["descriptor"]["name"])) {
                 $searchQuery = $message["intent"]["item"]["descriptor"]["name"];
-                $productIds = $this->getDefaultMagentoSearch($searchQuery);
-                $collection->addAttributeToFilter('entity_id', ["IN", $productIds]);
+                $this->_logger->info("search query => ".$searchQuery);
+                //$productIds = $this->getDefaultMagentoSearch($searchQuery);
+                //$collection->addAttributeToFilter('entity_id', ["IN", $productIds]);
+                $collection->addAttributeToFilter('name', ['like' => '%'.$searchQuery.'%']);
             }
             $collection = $this->_helper->addCondition($message, $collection);
         }
@@ -271,10 +273,6 @@ class SearchRepository implements \Beckn\Search\Api\SearchRepositoryInterface
         if(!empty($productReferance) && !empty($productReferance["product_list_id"]) && !empty($productReferance["product_list_id"])){
             $productData["tags"]["product_list_id"] = $productReferance["product_list_id"];
             $productData["tags"]["blockhash"] = $productReferance["blockhash"];
-        }
-        else{
-            $productData["tags"]["product_list_id"] = "";
-            $productData["tags"]["blockhash"] = "";
         }
 
         if ($product->getPricePolicyBpp() != "") {
